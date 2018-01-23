@@ -17,6 +17,19 @@ class XmlTest extends TestCase
         $this->assertSame( '<test>phpunit</test>', $xml->test->asXML(), 'source' );
     }
 
+    public function testEmptyElement()
+    {
+        $xml = simplexml_load_string( '<root/>' );
+
+        $e = new Element( 'test' );
+
+        $this->assertFalse( $e->isValid() );
+
+        $e->xmlAppend( $xml );
+
+        $this->assertSame( 0, $xml->count() );
+    }
+
     public function testUnprefixedNamespaceElement()
     {
         $xml = simplexml_load_string( '<root/>' );
@@ -68,5 +81,22 @@ XML;
         $this->assertTrue( $e->isValid(), 'valid' );
         $this->assertSame( 'phpunit', $e->getValue(), 'value' );
         $this->assertSame( 'foo', $e->name, 'attribute' );
+    }
+
+    /**
+     * @depends testParseElementWithAttribute
+     */
+    public function testAttributedElement()
+    {
+        // attributes are read-only--only the XML parser can set them
+        $src = simplexml_load_string( '<test name="foo">phpunit</test>' );
+        $xml = simplexml_load_string( '<root/>' );
+
+        $e = new Element( 'test' );
+        $e->xmlParse( $src );
+        $e->setValue( 'bar' );
+        $e->xmlAppend( $xml );
+
+        $this->assertSame( '<test name="foo">bar</test>', $xml->test->asXML() );
     }
 }

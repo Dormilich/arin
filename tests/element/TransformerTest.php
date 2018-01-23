@@ -127,6 +127,11 @@ class TransformerTest extends TestCase
         $this->assertSame( $expected, (string) $xml->datetime, 'xml value' );
     }
 
+    /**
+     * @dataProvider boolProvider
+     * @expectedException Dormilich\ARIN\Exceptions\ValidationException
+     * @expectedExceptionMessageRegExp /Value \[\w+\] is not allowed for the \[int\] element\./
+     */
     public function testIntegerTransformerIgnoresBoolean()
     {
         $e = new Element( 'int' );
@@ -195,6 +200,14 @@ class TransformerTest extends TestCase
             // always fails in Travis
         #   [ '2001:0db8:85a3:08d3:1319:8a2e:0000:7347', '2001:db8:85a3:8d3:1319:8a2e::7347' ],
             [ '2001:0db8:85a3:08d3::', '2001:db8:85a3:8d3::' ],
+        ];
+    }
+
+    public function boolProvider()
+    {
+        return [
+            [ true ],
+            [ false ],
         ];
     }
 }

@@ -12,34 +12,15 @@ use Dormilich\ARIN\Transformers\StringTransformer;
 /**
  * An Element represents a single XML tag without nested XML tags.
  */
-class Element implements ElementInterface, XmlHandlerInterface
+class Element implements XmlHandlerInterface
 {
-    /**
-     * @var string $name XML tag name.
-     */
-    protected $name;
-
-    /**
-     * @var string $prefix XML namespace prefix.
-     */
-    protected $prefix;
-
-    /**
-     * @var string $namespace XML namespace URI.
-     */
-    protected $namespace;
-
     /**
      * @var string $value The textContent of the element.
      */
     protected $value;
 
-    /**
-     * @var array $attributes XML attibute definitions.
-     */
-    protected $attributes = [];
-
-    use Traits\DataTransformation
+    use Traits\Attributes
+      , Traits\DataTransformation
       , Traits\DataValidation
       , Traits\NamespaceSetup
     ;
@@ -63,20 +44,13 @@ class Element implements ElementInterface, XmlHandlerInterface
     }
 
     /**
-     * Getter for a generated attribute.
+     * Return the element’s text content.
      * 
-     * Note: RegRWS only uses element values, element attributes, and
-     *       element values with generated attributes (DelegationKey).
-     * 
-     * @param string $name XML attribute name.
-     * @return string|NULL Attribute value.
+     * @return string
      */
-    public function __get( $name )
+    public function __toString()
     {
-        if ( isset( $this->attributes[ $name ] ) ) {
-            return $this->attributes[ $name ];
-        }
-        return NULL;
+        return (string) $this->value;
     }
 
     /**
@@ -151,15 +125,14 @@ class Element implements ElementInterface, XmlHandlerInterface
      * 
      * @param mixed $value 
      * @return string
-     * @throws DataTypeException Value not stringifiable.
+     * @throws ValidationException Value not stringifiable.
      */
     protected function convert( $value )
     {
         $value = $this->transform( $value );
-        // an element’s content must always be a scalar value
-        // no matter what custom validator is set
-        if ( is_scalar( $value ) and $this->validate( $value ) ) {
-            return is_bool( $value ) ? var_export( $value, true ) : (string) $value;
+
+        if ( is_string( $value ) and $this->validate( $value ) ) {
+            return $value;
         }
 
         $msg = 'Value [%s] is not allowed for the [%s] element.';
@@ -180,8 +153,7 @@ class Element implements ElementInterface, XmlHandlerInterface
             return $node;
         }
 
-        $name = ltrim( $this->prefix . ':' . $this->name, ':' );
-        $elem = $node->addChild( $name, $this->value, $this->namespace );
+        $elem = $node->addChild( $this->getTag(), $this->value, $this->getNamespace() );
 
         foreach ( $this->attributes as $name => $value ) {
             $elem->addAttribute( $name, $value );

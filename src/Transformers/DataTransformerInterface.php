@@ -12,7 +12,9 @@ use Dormilich\ARIN\Exceptions\DataTransformationException;
 interface DataTransformerInterface
 {
     /**
-     * Transform the data from the input format to the XML-compatible format.
+     * Transform the data from the input format to the XML-compatible format. 
+     * For elements, the return value must be a string, for groups it must be an 
+     * XML handler object.
      * 
      * @param mixed $value Input data.
      * @return mixed XML data.

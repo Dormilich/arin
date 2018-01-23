@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\ARIN\Elements\Element;
 use Dormilich\ARIN\Elements\Generated;
 use Dormilich\ARIN\Elements\ReadOnly;
 use Dormilich\ARIN\Transformers as TF;
@@ -8,6 +9,15 @@ use PHPUnit\Framework\TestCase;
 
 class ExtendedElementTest extends TestCase
 {
+    // for lack of a better place ...
+    public function testElementString()
+    {
+        $e = new Element( 'test' );
+        $e->setValue( 'foo' );
+
+        $this->assertSame( 'foo', (string) $e );
+    }
+
     public function testReadonlyElement()
     {
         $e = new ReadOnly( 'read' );
@@ -41,11 +51,12 @@ class ExtendedElementTest extends TestCase
     public function testGeneratedModifyFails()
     {
         $e = new Generated( 'auto' );
-        $e->setValue( true );
+        // since this comes off the API, the values are always strings
+        $e->setValue( 'true' );
 
         $this->assertSame( 'true', $e->getValue() );
 
-        $e->setValue( false );
+        $e->setValue( 'false' );
     }
 
     public function testGeneratedSkipsTransformer()

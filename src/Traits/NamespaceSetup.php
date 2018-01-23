@@ -6,6 +6,21 @@ namespace Dormilich\ARIN\Traits;
 trait NamespaceSetup
 {
     /**
+     * @var string $name XML tag name.
+     */
+    protected $name;
+
+    /**
+     * @var string $prefix XML namespace prefix.
+     */
+    protected $prefix;
+
+    /**
+     * @var string $namespace XML namespace URI.
+     */
+    protected $namespace;
+
+    /**
      * Set namespace and prefix.
      * 
      * @param string $tag Prefixed tag name.
@@ -38,5 +53,25 @@ trait NamespaceSetup
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Get the element’s tag name (local name).
+     * 
+     * @return string
+     */
+    public function getTag()
+    {
+        return ltrim( $this->prefix . ':' . $this->name, ':' );
+    }
+
+    /**
+     * Get the element’s tag name (local name).
+     * 
+     * @return string
+     */
+    public function getNamespace()
+    {
+        return $this->namespace;
     }
 }
