@@ -6,7 +6,9 @@ namespace Dormilich\ARIN\Transformers;
 use Dormilich\ARIN\Exceptions\DataTransformationException;
 
 /**
- * Use functions for transformation. 
+ * Convert dates based upon a `DateTimeInterface` implementation. 
+ * The transformation converts the timestamp to UTC, the reverse transformation 
+ * converts it back to the configured timezone.
  */
 class DatetimeTransformer implements DataTransformerInterface
 {
@@ -45,31 +47,36 @@ class DatetimeTransformer implements DataTransformerInterface
     }
 
     /**
-     * Reads a datetime instance and converts it into ISO format.
+     * Reads a datetime instance and converts it into ISO format using the UTC 
+     * timezone.
      * 
      * @param mixed $value Input data.
      * @return mixed XML data.
      */
     public function transform( $value )
     {
-        if ( method_exists( $value, 'setTimezone' ) ) {
-            $value->setTimezone( $this->timezone );
-        }
+        $utc = new \DateTimeZone( 'UTC' );
+ 
+        $value = $this->setTimezone( $value, $utc );
 
         if ( $value instanceof \DateTimeInterface ) {
             return $value->format( 'c' );
         }
 
         try {
-            return date_create( $value, $this->timezone )->format( 'c' );
-        } catch (\Exception $e) {
+            // read date in current timezone and convert to UTC
+            $date = new \DateTime( $value, $this->timezone );
+            $date->setTimezone( $utc );
+            return $date->format( 'c' );
+        } catch ( \Exception $e ) {
             return $value;
         }
     }
 
     /**
      * Creates a new date instance of the value. NULL values are treated as 
-     * dates as well, except for the native datetime classes.
+     * dates as well, except for the native datetime classes. 
+     * Uses the configured timezone, if possible.
      * 
      * @param string|NULL $value XML data.
      * @return DateTimeInterface Output data.
@@ -82,6 +89,29 @@ class DatetimeTransformer implements DataTransformerInterface
             return $value;
         }
 
-        return new $class( $value, $this->timezone );
+        $utc = new \DateTimeZone( 'UTC' );
+        $date = new $class( $value, $utc );
+        $date = $this->setTimezone( $date, $this->timezone );
+
+        return $date;
+    }
+
+    /**
+     * Set the timezone on a date object, if possible (the `setTimezone()` 
+     * method is not part of the `DateTimeInterface`).
+     * 
+     * @param mixed $date 
+     * @param DateTimeZone $tz 
+     * @return mixed
+     */
+    private function setTimezone( $date, \DateTimeZone $tz )
+    {
+        if ( method_exists( $date, 'setTimezone' ) ) {
+            // use updated object from DateTimeImmutable
+            // use original object if there is no return value
+            $date = $date->setTimezone( $tz ) ?: $date;
+        }
+
+        return $date;
     }
 }

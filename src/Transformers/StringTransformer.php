@@ -6,7 +6,7 @@ namespace Dormilich\ARIN\Transformers;
 use Dormilich\ARIN\Primary;
 
 /**
- * Convert input to string and return XML data unchanged.
+ * Convert input to string and return internal data unchanged.
  */
 class StringTransformer implements DataTransformerInterface
 {

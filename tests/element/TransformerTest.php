@@ -6,21 +6,38 @@ use PHPUnit\Framework\TestCase;
 
 class TransformerTest extends TestCase
 {
+    public function testTransformerIsCalledInElement()
+    {
+        $mock = $this->createMock( TF\DataTransformerInterface::class );
+        $mock->expects( $this->once() )
+             ->method( 'transform' )
+             ->with( $this->identicalTo( true ) )
+             ->willReturn( 'true' );
+        $mock->expects( $this->once() )
+             ->method( 'reverseTransform' )
+             ->with( $this->identicalTo( 'true' ) )
+             ->willReturn( true );
+
+        $e = new Element( 'test' );
+        $e->apply( $mock );
+        $e->setValue( true );
+        $value = $e->getValue();
+
+        $this->assertTrue( $value );
+    }
+
     /**
      * @dataProvider stringInputProvider
      */
     public function testStringTransformer( $in, $out )
     {
-        $e = new Element( 'string' );
-        $e->apply( new TF\StringTransformer );
+        $tf = new TF\StringTransformer;
 
-        $this->assertFalse( $e->isDefined(), 'defined before' );
-        $this->assertNull( $e->getValue(), 'value before' );
+        $internal = $tf->transform( $in );
+        $value = $tf->reverseTransform( $internal );
 
-        $e->setValue( $in );
-
-        $this->assertTrue( $e->isDefined(), 'defined after' );
-        $this->assertSame( $out, $e->getValue() );
+        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $out, $value, 'output' );
     }
 
     /**
@@ -28,16 +45,25 @@ class TransformerTest extends TestCase
      */
     public function testIntegerTransformer( $in, $out )
     {
-        $e = new Element( 'int' );
-        $e->apply( new TF\IntegerTransformer );
+        $tf = new TF\IntegerTransformer;
 
-        $this->assertFalse( $e->isDefined(), 'defined before' );
-        $this->assertNull( $e->getValue(), 'value before' );
+        $internal = $tf->transform( $in );
+        $value = $tf->reverseTransform( $internal );
 
-        $e->setValue( $in );
+        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $out, $value, 'output' );
+    }
 
-        $this->assertTrue( $e->isDefined(), 'defined after' );
-        $this->assertSame( $out, $e->getValue() );
+    public function testIntegerTransformerIgnoresBoolean()
+    {
+        $tf = new TF\IntegerTransformer;
+
+        // because true == 1, false == 0
+        $true = $tf->transform( true );
+        $false = $tf->transform( false );
+
+        $this->assertTrue( $true );
+        $this->assertFalse( $false );
     }
 
     /**
@@ -45,16 +71,13 @@ class TransformerTest extends TestCase
      */
     public function testBooleanTransformer( $in, $out )
     {
-        $e = new Element( 'bool' );
-        $e->apply( new TF\BooleanTransformer );
+        $tf = new TF\BooleanTransformer;
 
-        $this->assertFalse( $e->isDefined(), 'defined before' );
-        $this->assertNull( $e->getValue(), 'value before' );
+        $internal = $tf->transform( $in );
+        $value = $tf->reverseTransform( $internal );
 
-        $e->setValue( $in );
-
-        $this->assertTrue( $e->isDefined(), 'defined after' );
-        $this->assertSame( $out, $e->getValue() );
+        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $out, $value, 'output' );
     }
 
     /**
@@ -62,88 +85,138 @@ class TransformerTest extends TestCase
      */
     public function testIpTransformer( $in, $out )
     {
-        $e = new Element( 'ip' );
-        $e->apply( new TF\IpTransformer );
+        $tf = new TF\IpTransformer;
 
-        $this->assertFalse( $e->isDefined(), 'defined before' );
-        $this->assertNull( $e->getValue(), 'value before' );
+        $internal = $tf->transform( $in );
+        $value = $tf->reverseTransform( $internal );
 
-        $e->setValue( $in );
-
-        $this->assertTrue( $e->isDefined(), 'defined after' );
-        $this->assertSame( $out, $e->getValue() );
+        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $out, $value, 'output' );
     }
 
     public function testCallbackTransformer()
     {
-        $e = new Element( 'callback' );
-        $e->apply( new TF\CallbackTransformer( 'strtoupper', 'strtolower' ) );
+        $tf = new TF\CallbackTransformer( 'strtoupper', 'strtolower' );
 
-        $e->setValue( 'Foo' );
+        $internal = $tf->transform( 'Foo' );
+        $value = $tf->reverseTransform( $internal );
 
-        $this->assertSame( 'foo', $e->getValue() );
-
-        $xml = simplexml_load_string( '<root/>' );
-        $e->xmlAppend( $xml );
-
-        $this->assertSame( 'FOO', (string) $xml->callback, 'xml value' );
+        $this->assertSame( 'FOO', $internal, 'internal' );
+        $this->assertSame( 'foo', $value, 'output' );
     }
 
     public function testStackTransformer()
     {
         $stack = new TF\StackTransformer;
-        $stack->push( new TF\CallbackTransformer( 'strtolower', 'strval' ) );
+        $stack->push( new TF\CallbackTransformer( 'strtolower', 'strtoupper' ) );
         $stack->push( new TF\CallbackTransformer( 'ucfirst', 'strval' ) );
 
-        $e = new Element( 'stack' );
-        $e->apply( $stack );
-        $e->setValue( 'FOO' );
+        $internal = $stack->transform( 'FOO' );
+        $value = $stack->reverseTransform( $internal );
 
-        $this->assertSame( 'Foo', $e->getValue() );
+        $this->assertSame( 'Foo', $internal, 'full stack' );
+        $this->assertSame( 'FOO', $value, 'output' );
+        $this->assertCount( 2, $stack );
+
+        $stack->pop();
+
+        $internal = $stack->transform( 'FOO' );
+
+        $this->assertSame( 'foo', $internal, 'reduced stack' );
+        $this->assertCount( 1, $stack );
     }
 
-    public function testDatetimeTransformer()
+    public function testDefaultDatetimeTransformer()
+    {
+        $tf = new TF\DatetimeTransformer;
+
+        $internal = $tf->transform( '1997-04-18 13:52:09' ); // UTC
+        $date = $tf->reverseTransform( $internal );
+
+        $this->assertSame( '1997-04-18T13:52:09+00:00', $internal, 'internal' );
+        $this->assertInstanceOf( 'DateTimeImmutable', $date, 'class' );
+        $this->assertSame( '1997-04-18T13:52:09+00:00', $date->format( 'c' ), 'output' );
+    }
+
+    public function testConfiguredDatetimeTransformer()
     {
         $setup = new \DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
+        $tf = new TF\DatetimeTransformer( $setup );
 
-        $e = new Element( 'datetime' );
-        $e->apply( new TF\DatetimeTransformer( $setup ) );
+        $internal = $tf->transform( '1997-04-18 13:52:09' ); // America/New_York
+        $date = $tf->reverseTransform( $internal );
 
-        $this->assertFalse( $e->isDefined(), 'defined before' );
-        $this->assertNull( $e->getValue(), 'value before' );
-
-        $e->setValue( '1997-04-18 13:52:09' );
-
-        $date = $e->getValue();
-
-        $expected = '1997-04-18T13:52:09-04:00';
+        $this->assertSame( '1997-04-18T17:52:09+00:00', $internal, 'internal' );
         $this->assertInstanceOf( 'DateTime', $date, 'class' );
         $this->assertNotSame( $setup, $date, 'separation' );
-        $this->assertSame( $expected, $date->format( 'c' ) );
-
-        $xml = simplexml_load_string( '<root/>' );
-        $e->xmlAppend( $xml );
-
-        $this->assertSame( $expected, (string) $xml->datetime, 'xml value' );
+        $this->assertSame( '1997-04-18T13:52:09-04:00', $date->format( 'c' ), 'output' );
     }
 
     /**
-     * @dataProvider boolProvider
-     * @expectedException Dormilich\ARIN\Exceptions\ValidationException
-     * @expectedExceptionMessageRegExp /Value \[\w+\] is not allowed for the \[int\] element\./
+     * @depends testDefaultDatetimeTransformer
      */
-    public function testIntegerTransformerIgnoresBoolean()
+    public function testDatetimeTransformNullDate()
     {
-        $e = new Element( 'int' );
-        $e->apply( new TF\IntegerTransformer );
+        $tf = new TF\DatetimeTransformer;
+        // the native date classes would convert NULL into the current timestamp
+        $value = $tf->reverseTransform( NULL );
 
-        $e->setValue( true );
+        $this->assertNull( $value );
+    }
 
-        $this->assertSame( 'true', $e->getValue() );
+    public function testDatetimeTransformObject()
+    {
+        $setup = new \DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
+        $tf = new TF\DatetimeTransformer( $setup );
 
-        $e->setValue( false );
+        $data = new \DateTimeImmutable( '1997-04-18 13:52:09', new \DateTimeZone( 'Europe/Paris' ) );
+        $pass = $tf->transform( $data );
+        $fail = $tf->transform( 'invalid' );
 
-        $this->assertSame( 'false', $e->getValue() );
+        $this->assertSame( '1997-04-18T13:52:09+02:00', $data->format( 'c' ), 'input' );
+        $this->assertSame( '1997-04-18T11:52:09+00:00', $pass, 'internal' );
+        $this->assertSame( 'invalid', $fail, 'invalid' );
+    }
+
+    public function testElementTransformer()
+    {
+        $setup = new Element( 'hex' );
+
+        $tf = new TF\ElementTransformer( $setup );
+
+        $elem = $tf->transform( 'abc' );
+        $fail = $tf->transform( new \stdClass );
+        $value = $tf->reverseTransform( $elem );
+
+        $this->assertNotSame( $setup, $elem );
+        $this->assertInstanceOf( Element::class, $elem, 'class' );
+        $this->assertSame( 'hex', $elem->getName(), 'name' );
+        $this->assertSame( 'abc', $elem->getValue(), 'value' );
+
+        $this->assertNotInstanceOf( Element::class, $fail, 'invalid' );
+    }
+
+    public function testElementTransformerWithValidator()
+    {
+        $setup = new Element( 'hex' );
+        $setup->test( 'ctype_xdigit' );
+
+        $tf = new TF\ElementTransformer( $setup );
+        $data = $tf->transform( 'xyz' );
+
+        $this->assertSame( 'xyz', $data);
+    }
+
+    public function testNonTransformer()
+    {
+        $tf = new TF\NonTransformer;
+        $input = new \stdClass;
+
+        $internal = $tf->transform( $input );
+        $value = $tf->reverseTransform( $internal );
+
+        $this->assertSame( $input, $internal, 'internal' );
+        $this->assertSame( $input, $value, 'output' );
     }
 
     // test payloads

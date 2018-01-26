@@ -6,14 +6,14 @@ namespace Dormilich\ARIN\Transformers;
 use Dormilich\ARIN\Exceptions\DataTransformationException;
 
 /**
- * Use functions for transformation. 
+ * Consecutively transform a value according to the configured transformers.  
  */
-class StackTransformer implements DataTransformerInterface
+class StackTransformer implements DataTransformerInterface, \Countable
 {
     /**
      * @var DataTransformerInterface[]
      */
-    protected $stack;
+    protected $stack = [];
 
     /**
      * Transform the data from the input format to the XML-compatible format.
@@ -62,5 +62,14 @@ class StackTransformer implements DataTransformerInterface
     public function pop()
     {
         return array_pop( $this->stack );
+    }
+
+    /**
+     * @see http://php.net/Countable
+     * @return integer
+     */
+    public function count()
+    {
+        return count( $this->stack );
     }
 }
