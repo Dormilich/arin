@@ -93,13 +93,13 @@ class ExtendedElementTest extends TestCase
         $e = new Generated( 'auto' );
         $e->xmlParse( $xml );
 
-        $this->assertTrue( $e->isDefined(), 'original defined' );
+        $this->assertTrue( $e->isValid(), 'original valid' );
         $this->assertSame( 'phpunit', $e->getValue(), 'original value' );
         $this->assertSame( 'generated', $e->type, 'original attribute' );
 
         $c = clone $e;
 
-        $this->assertFalse( $c->isDefined(), 'clone defined' );
+        $this->assertFalse( $c->isValid(), 'clone valid' );
         $this->assertNull( $c->getValue(), 'clone value' );
         $this->assertNull( $c->type, 'clone attribute' );
     }

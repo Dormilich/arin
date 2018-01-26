@@ -65,7 +65,6 @@ XML;
         $e = new Element( 'test' );
         $e->xmlParse( $xml );
 
-        $this->assertTrue( $e->isDefined(), 'defined' );
         $this->assertTrue( $e->isValid(), 'valid' );
         $this->assertSame( 'phpunit', $e->getValue(), 'value' );
     }
@@ -77,7 +76,6 @@ XML;
         $e = new Element( 'test' );
         $e->xmlParse( $xml );
 
-        $this->assertTrue( $e->isDefined(), 'defined' );
         $this->assertTrue( $e->isValid(), 'valid' );
         $this->assertSame( 'phpunit', $e->getValue(), 'value' );
         $this->assertSame( 'foo', $e->name, 'attribute' );

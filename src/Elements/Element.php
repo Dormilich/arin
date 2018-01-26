@@ -12,7 +12,7 @@ use Dormilich\ARIN\Transformers\StringTransformer;
 /**
  * An Element represents a single XML tag without nested XML tags.
  */
-class Element implements XmlHandlerInterface
+class Element implements XmlHandlerInterface, Transformable, Validatable
 {
     /**
      * @var string $value The textContent of the element.
@@ -70,7 +70,7 @@ class Element implements XmlHandlerInterface
      */
     protected function getDefaultValidator()
     {
-        return 'is_scalar';
+        return 'is_string';
     }
 
     /**
@@ -108,16 +108,6 @@ class Element implements XmlHandlerInterface
     public function isValid()
     {
         return $this->validate( $this->value );
-    }
-
-    /**
-     * Returns TRUE if the element’s value is set.
-     * 
-     * @return boolean
-     */
-    public function isDefined()
-    {
-        return $this->value !== NULL;
     }
 
     /**

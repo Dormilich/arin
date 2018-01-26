@@ -21,12 +21,12 @@ class ReadOnly extends Element
      */
     public function setValue( $value )
     {
-        if ( $this->transform( $value ) === $this->value ) {
-            return $this;
+        if ( NULL === $this->value ) {
+            return parent::setValue( $value );
         }
 
-        if ( ! $this->isDefined() ) {
-            return parent::setValue($value);
+        if ( $this->transform( $value ) === $this->value ) {
+            return $this;
         }
 
         $msg = 'The [%s] element must not be modified once it is set.';

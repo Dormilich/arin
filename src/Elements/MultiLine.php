@@ -10,9 +10,9 @@ use Dormilich\ARIN\Traits;
 /**
  * An element representing a multi-line text block.
  * 
- * With regards to the API this is a Payload, but logically (and thus programmatically) 
- * this is an Element (although the common ground is so low that inheriting from 
- * Element is not effective).
+ * With regards to the API this is a Payload, although logically (and therefore 
+ * programmatically) this is an Element (although the common ground is so low 
+ * that inheriting from Element is not feasible).
  */
 class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Iterator
 {
@@ -21,9 +21,7 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
      */
     protected $values = [];
 
-    use Traits\Attributes
-      , Traits\NamespaceSetup
-    ;
+    use Traits\NamespaceSetup;
 
     /**
      * Setting up the basic XML definition. The name may be either a tag name
@@ -100,16 +98,6 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
      * @return boolean
      */
     public function isValid()
-    {
-        return count( $this->values ) > 0;
-    }
-
-    /**
-     * Check if there are members in the collection. 
-     * 
-     * @return boolean
-     */
-    public function isDefined()
     {
         return count( $this->values ) > 0;
     }
@@ -228,15 +216,40 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
     {
         $e = new Element( 'line' );
 
-        if ( NULL === $index ) {
-            $e->setValue( $value );
-        }
-        else {
-            $xml = sprintf( '<line number="%d">%s</line>', ++$index, $value );
+        if ( is_int( $index ) and $index >= 0 ) {
+            $xml = sprintf( '<line number="%d"/>', ++$index );
             $e->xmlParse( new \SimpleXMLElement( $xml ) );
         }
 
+        $e->setValue( $value );
+
         return $e;
+    }
+
+    /**
+     * Test if an array key exists.
+     * 
+     * @param mixed $offset 
+     * @return boolean
+     */
+    private function arrayKeyExists( $offset )
+    {
+        return isset( $this->values[ $offset ] );
+    }
+
+    /**
+     * Convert negative offsets into positive ones.
+     * 
+     * @param integer|string $offset 
+     * @return integer|string
+     */
+    private function fromReverseOffset( $offset )
+    {
+        if ( is_int( $offset ) and $offset < 0 ) {
+            $offset += count( $this->values );
+        }
+
+        return $offset;
     }
 
     /**
@@ -307,7 +320,9 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
      */
     public function offsetExists( $offset )
     {
-        return isset( $this->values[ $offset ] );
+        $offset = $this->fromReverseOffset( $offset );
+
+        return $this->arrayKeyExists( $offset );
     }
 
     /**
@@ -322,7 +337,7 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
     {
         $offset = $this->fromReverseOffset( $offset );
 
-        if ( $this->offsetExists( $offset ) ) {
+        if ( $this->arrayKeyExists( $offset ) ) {
             $value = $this->values[ $offset ];
         }
         else {
@@ -346,7 +361,7 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
      */
     public function offsetSet( $offset, $value )
     {
-        if ( null !== $offset ) {
+        if ( NULL !== $offset ) {
             $msg = 'A line inside a text block may not be modified.';
             throw new \RuntimeException( $msg );
         }
@@ -367,24 +382,9 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
     {
         $offset = $this->fromReverseOffset( $offset );
 
-        if ( $this->offsetExists( $offset ) ) {
+        if ( $this->arrayKeyExists( $offset ) ) {
             $msg = 'A line inside a text block may not be deleted.';
             throw new \RuntimeException( $msg );
         }
-    }
-
-    /**
-     * Convert negative offsets into positive ones.
-     * 
-     * @param integer|string $offset 
-     * @return integer|string
-     */
-    private function fromReverseOffset( $offset )
-    {
-        if ( is_int( $offset ) and $offset < 0 ) {
-            $offset += count( $this->values );
-        }
-
-        return $offset;
     }
 }

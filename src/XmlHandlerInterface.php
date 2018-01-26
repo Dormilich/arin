@@ -30,4 +30,11 @@ interface XmlHandlerInterface
      * @return void
      */
     public function xmlParse( \SimpleXMLElement $node );
+
+    /**
+     * Return the validity of an Element, Payload or Element group.
+     * 
+     * @return boolean
+     */
+    public function isValid();
 }

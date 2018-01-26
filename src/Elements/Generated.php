@@ -22,24 +22,13 @@ class Generated extends ReadOnly
     }
 
     /**
-     * A generated value does not need input transformation. 
+     * A generated value does not need input transformation/validation. 
      * 
      * @param mixed $value 
-     * @return mixed
+     * @return string
      */
-    protected function transform( $value )
+    protected function convert( $value )
     {
-        return $value;
-    }
-
-    /**
-     * A generated value does not need validation.
-     * 
-     * @param mixed $value 
-     * @return boolean
-     */
-    protected function validate( $value )
-    {
-        return true;
+        return (string) $value;
     }
 }

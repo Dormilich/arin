@@ -11,7 +11,6 @@ class MultiLineElementTest extends TestCase
         $ml = new MultiLine( 'comment' );
 
         $this->assertFalse( $ml->isValid() );
-        $this->assertFalse( $ml->isDefined() );
         $this->assertCount( 0, $ml );
 
         $comment = file_get_contents(__DIR__ . '/_fixtures/painting.txt');
@@ -19,7 +18,6 @@ class MultiLineElementTest extends TestCase
         $ml->setValue( $comment );
 
         $this->assertTrue( $ml->isValid() );
-        $this->assertTrue( $ml->isDefined() );
         $this->assertCount( 5, $ml );
 
         $this->assertSame( $comment, (string) $ml );
@@ -129,7 +127,7 @@ class MultiLineElementTest extends TestCase
         $ml->addValue( 'bar' );
 
         $this->assertTrue( isset( $ml[ 0 ] ), 'isset' );
-        $this->assertFalse( isset( $ml[ -1 ] ), 'no reverse isset' );
+        $this->assertTrue( isset( $ml[ -1 ] ), 'reverse isset' );
 
         $this->assertSame( 'foo', $ml[ 0 ]->getValue(), 'get' );
         $this->assertSame( 'bar', $ml[ -1 ]->getValue(), 'reverse get' );
@@ -146,7 +144,6 @@ class MultiLineElementTest extends TestCase
         $e = @$ml[ 9 ];
 
         $this->assertInstanceOf( Element::class, $e );
-        $this->assertFalse( $e->isDefined() );
         $this->assertNull( $e->getValue() );
 
         $e = $ml[ 9 ];
