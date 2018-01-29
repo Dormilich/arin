@@ -4,7 +4,7 @@
 namespace Dormilich\ARIN\Validators;
 
 /**
- * Test a value against a predefined set of strings.
+ * Test a value if it is a syntactically valid email address.
  */
 class Email
 {

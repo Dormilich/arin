@@ -4,7 +4,7 @@
 namespace Dormilich\ARIN\Validators;
 
 /**
- * Test a value against a predefined set of strings.
+ * Test a value against a regular expression.
  */
 class RegExp
 {

@@ -140,7 +140,7 @@ class TransformerTest extends TestCase
 
     public function testConfiguredDatetimeTransformer()
     {
-        $setup = new \DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
+        $setup = new DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
         $tf = new TF\DatetimeTransformer( $setup );
 
         $internal = $tf->transform( '1997-04-18 13:52:09' ); // America/New_York
@@ -166,10 +166,10 @@ class TransformerTest extends TestCase
 
     public function testDatetimeTransformObject()
     {
-        $setup = new \DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
+        $setup = new DateTime( 'now', new DateTimeZone( 'America/New_York' ) );
         $tf = new TF\DatetimeTransformer( $setup );
 
-        $data = new \DateTimeImmutable( '1997-04-18 13:52:09', new \DateTimeZone( 'Europe/Paris' ) );
+        $data = new DateTimeImmutable( '1997-04-18 13:52:09', new DateTimeZone( 'Europe/Paris' ) );
         $pass = $tf->transform( $data );
         $fail = $tf->transform( 'invalid' );
 
@@ -185,7 +185,7 @@ class TransformerTest extends TestCase
         $tf = new TF\ElementTransformer( $setup );
 
         $elem = $tf->transform( 'abc' );
-        $fail = $tf->transform( new \stdClass );
+        $fail = $tf->transform( new stdClass );
         $value = $tf->reverseTransform( $elem );
 
         $this->assertNotSame( $setup, $elem );
@@ -210,7 +210,7 @@ class TransformerTest extends TestCase
     public function testNonTransformer()
     {
         $tf = new TF\NonTransformer;
-        $input = new \stdClass;
+        $input = new stdClass;
 
         $internal = $tf->transform( $input );
         $value = $tf->reverseTransform( $internal );

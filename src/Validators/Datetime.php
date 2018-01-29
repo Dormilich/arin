@@ -4,7 +4,7 @@
 namespace Dormilich\ARIN\Validators;
 
 /**
- * Test a value against a predefined set of strings.
+ * Test a value against a predefined date format.
  */
 class Datetime
 {
@@ -20,7 +20,7 @@ class Datetime
      * @param array $setup The configuration for the validator.
      * @return self
      */
-    public function __construct( array $setup )
+    public function __construct( array $setup = [] )
     {
         if ( isset( $setup[ 'format' ] ) ) {
             $this->format = (string) $setup[ 'format' ];

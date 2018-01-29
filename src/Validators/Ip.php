@@ -33,7 +33,7 @@ class Ip
      * @param array $setup The configuration for the validator.
      * @return self
      */
-    public function __construct( array $setup )
+    public function __construct( array $setup = [] )
     {
         if ( isset( $setup[ 'version' ] ) ) {
             $this->flags = $this->getFlags( $setup[ 'version' ] );
