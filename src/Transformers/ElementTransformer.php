@@ -59,8 +59,8 @@ class ElementTransformer implements DataTransformerInterface
         if ( ! is_string( $value ) ) {
             $value = (new StringTransformer)->transform( $value );
         }
-
-        if ( is_string( $value ) ) {
+        // NULL => undefined index
+        if ( is_string( $value ) or NULL === $value ) {
             $value = $this->createElement( $value );
         }
 

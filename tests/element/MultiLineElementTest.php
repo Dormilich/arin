@@ -46,7 +46,7 @@ class MultiLineElementTest extends TestCase
         $comment = file_get_contents(__DIR__ . '/_fixtures/painting.txt');
         $lines = explode( PHP_EOL, $comment );
 
-        $obj = new \ArrayObject( $lines );
+        $obj = new ArrayObject( $lines );
 
         $ml->setValue( $obj );
 

@@ -3,7 +3,7 @@
 use Dormilich\ARIN\Elements\Element;
 use PHPUnit\Framework\TestCase;
 
-class XmlTest extends TestCase
+class XmlElementTest extends TestCase
 {
     public function testPlainElement()
     {
