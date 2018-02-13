@@ -1,0 +1,14 @@
+{
+    "message": "The Payload could not be processed",
+    "code": "E_BAD_REQUEST",
+    "components": [{
+        "name": "URL",
+        "message": "did not match"
+    }, {
+        "name": "MIME-Type",
+        "message": "text/xml is not supported"
+    }],
+    "additionalInfo": [
+        "Please read the documentation before trying again"
+    ]
+}

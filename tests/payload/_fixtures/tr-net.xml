@@ -1,0 +1,29 @@
+<ticketedRequest xmlns="http://www.arin.net/regrws/core/v1">
+    <net>
+        <version>6</version>
+        <comment>
+            <line number="1">One of ARIN's base allocations</line>
+            <line number="2">In the original there are no ASN or direct Poc records</line>
+        </comment>
+        <registrationDate>1999-07-19T09:41:36-04:00</registrationDate>
+        <orgHandle>ARIN</orgHandle>
+        <handle>NET6-2001-400-0</handle>
+        <netBlocks>
+            <netBlock>
+                <type>AR</type>
+                <description>Allocated to ARIN</description>
+                <startAddress>2001:400::</startAddress>
+                <endAddress>2001:5FF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF</endAddress>
+                <cidrLength>23</cidrLength>
+            </netBlock>
+        </netBlocks>
+        <parentNetHandle>NET6-2001-0</parentNetHandle>
+        <netName>ARIN-001</netName>
+        <originASes>
+            <originAS>AS0</originAS>
+        </originASes>
+        <pocLinks>
+            <pocLinkRef description="Admin" handle="ARIN-HOSTMASTER" function="AD"></pocLinkRef>
+        </pocLinks>
+    </net>
+</ticketedRequest>

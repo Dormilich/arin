@@ -1,0 +1,15 @@
+{
+    "references": [{
+        "id": "MESSAGEID",
+        "references": [{
+            "filename": "haiku.txt",
+            "id": "ATTACHMENTID"
+        }]
+    }],
+    "ticketNo": "TICKETNO",
+    "created": "2011-01-25T16:17:18-05:00",
+    "updated": "2012-02-28T17:41:17-05:00",
+    "type": "POC_RECOVERY",
+    "status": "PENDING_CONFIRMATION",
+    "resolution": "ACCEPTED"
+}

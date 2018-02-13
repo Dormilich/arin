@@ -1,0 +1,4 @@
+<roa xmlns="http://www.arin.net/regrws/rpki/v1">
+    <signature>RGWqTwh/z7+mC/R9VJIcb1eUgTTigB8xFV+DYzEhim4wM00hp4GRfeJQL6JFXG1lmAfVWCVe5rFxP7Py/hGslQF43wt/PMztYSc0YIiYXjVB+heLgzDt4iaFdjJS4oxTrJhawuaYCwYIwzFyDsOEX+Tt9aq0votJxSe0dkw5FCIC5/oGIpW6+fDMeBQir3p9wDIIGhyOlgwz2xlOu3d/qNbgCp0UKkgMs1QrKauw4dDJSVh0YlE/No6Ao9Ez3gWc9kk367y5fZgeWiF6ucFsDq2VDtCvcQ/yS+NMbRuK51+V4ZUmBg8US+wwwEPpBMt8MCQ5BTShwlAdejOykIsviQ==</signature>
+    <roaData>1|1340135296|My First ROA|1234|05-25-2011|05-25-2012|10.0.0.0|8|16|</roaData>
+</roa>

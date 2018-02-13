@@ -1,0 +1,29 @@
+<ticket xmlns="http://www.arin.net/regrws/core/v1" xmlns:ns2="http://www.arin.net/regrws/messages/v1" xmlns:ns4="http://www.arin.net/regrws/shared-ticket/v1">
+    <messages>
+        <message>
+            <ns2:messageId>MESSAGEID</ns2:messageId>
+            <ns2:createdDate>2012-02-28T17:41:17-05:00</ns2:createdDate>
+            <subject>Haiku</subject>
+            <text>
+                <line number="1">Waves of destiny</line>
+                <line number="2">so many lifes in motion</line>
+                <line number="3">pebble in a pond</line>
+            </text>
+            <category>NONE</category>
+            <attachments>
+                <attachment>
+                    <data>V2F2ZXMgb2YgZGVzdGlueQpzbyBtYW55IGxpZmVzIGluIG1vdGlvbgpwZWJibGUgaW4gYSBwb25k</data>
+                    <filename>haiku.txt</filename>
+                </attachment>
+            </attachments>
+        </message>
+    </messages>
+    <ticketNo>TICKETNO</ticketNo>
+    <ns4:shared>true</ns4:shared>
+    <ns4:orgHandle>ARIN</ns4:orgHandle>
+    <createdDate>2011-11-07T14:04:29-05:00</createdDate>
+    <updatedDate>2012-02-28T17:41:17-05:00</updatedDate>
+    <webTicketType>POC_RECOVERY</webTicketType>
+    <webTicketStatus>PENDING_CONFIRMATION</webTicketStatus>
+    <webTicketResolution>ACCEPTED</webTicketResolution>
+</ticket>

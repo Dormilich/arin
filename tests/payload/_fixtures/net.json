@@ -1,0 +1,27 @@
+{
+    "version": "6",
+    "comment": [
+        "One of ARIN's base allocations",
+        "In the original there are no ASN or direct Poc records"
+    ],
+    "created": "1999-07-19T09:41:36-04:00",
+    "org": "ARIN",
+    "handle": "NET6-2001-400-0",
+    "net": [{
+        "type": "AR",
+        "description": "Allocated to ARIN",
+        "start": "2001:400::",
+        "end": "2001:5FF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF",
+        "length": "23"
+    }],
+    "parentNet": "NET6-2001-0",
+    "name": "ARIN-001",
+    "asn": [
+        "AS0"
+    ],
+    "poc": [{
+        "description": "Admin",
+        "handle": "ARIN-HOSTMASTER",
+        "function": "AD"
+    }]
+}

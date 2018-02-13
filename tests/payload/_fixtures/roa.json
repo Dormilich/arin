@@ -1,0 +1,15 @@
+{
+    "signature": "RGWqTwh/z7+mC/R9VJIcb1eUgTTigB8xFV+DYzEhim4wM00hp4GRfeJQL6JFXG1lmAfVWCVe5rFxP7Py/hGslQF43wt/PMztYSc0YIiYXjVB+heLgzDt4iaFdjJS4oxTrJhawuaYCwYIwzFyDsOEX+Tt9aq0votJxSe0dkw5FCIC5/oGIpW6+fDMeBQir3p9wDIIGhyOlgwz2xlOu3d/qNbgCp0UKkgMs1QrKauw4dDJSVh0YlE/No6Ao9Ez3gWc9kk367y5fZgeWiF6ucFsDq2VDtCvcQ/yS+NMbRuK51+V4ZUmBg8US+wwwEPpBMt8MCQ5BTShwlAdejOykIsviQ==",
+    "data": {
+        "version": "1",
+        "signed": "1340135296",
+        "name": "My First ROA",
+        "asn": "1234",
+        "start": "05-25-2011",
+        "end": "05-25-2012",
+        "prefix": [{
+            "cidr": "10.0.0.0/8",
+            "maxLength": "16"
+        }]
+    }
+}

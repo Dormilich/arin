@@ -1,0 +1,15 @@
+<message xmlns="http://www.arin.net/regrws/core/v1">
+    <subject>Haiku</subject>
+    <text>
+        <line number="1">Waves of destiny</line>
+        <line number="2">so many lifes in motion</line>
+        <line number="3">pebble in a pond</line>
+    </text>
+    <category>NONE</category>
+    <attachments>
+        <attachment>
+            <data>V2F2ZXMgb2YgZGVzdGlueQpzbyBtYW55IGxpZmVzIGluIG1vdGlvbgpwZWJibGUgaW4gYSBwb25k</data>
+            <filename>haiku.txt</filename>
+        </attachment>
+    </attachments>
+</message>

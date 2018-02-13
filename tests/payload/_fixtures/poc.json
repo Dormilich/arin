@@ -1,0 +1,33 @@
+{
+    "state": "VA",
+    "country": {
+        "name": "UNITED STATES",
+        "code2": "US",
+        "code3": "USA",
+        "e164": "1"
+    },
+    "email": [
+        "hostmaster@arin.net"
+    ],
+    "address": [
+        "3635 Concorde Parkway",
+        "Suite 200"
+    ],
+    "city": "Chantilly",
+    "zip": "20151",
+    "comment": [
+        "This is ARIN's own poc object"
+    ],
+    "created": "2003-04-30T11:32:56-04:00",
+    "handle": "ARIN-HOSTMASTER",
+    "type": "ROLE",
+    "company": "American Registry for Internet Numbers",
+    "lastName": "Registration Services Department",
+    "phone": [{
+        "type": {
+            "description": "Office",
+            "code": "O"
+        },
+        "number": "+1-703-227-0660"
+    }]
+}

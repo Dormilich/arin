@@ -1,0 +1,17 @@
+<error xmlns="http://www.arin.net/regrws/core/v1">
+    <message>The Payload could not be processed</message>
+    <code>E_BAD_REQUEST</code>
+    <components>
+        <component>
+            <name>URL</name>
+            <message>did not match</message>
+        </component>
+        <component>
+            <name>MIME-Type</name>
+            <message>text/xml is not supported</message>
+        </component>
+    </components>
+    <additionalInfo>
+        <message>Please read the documentation before trying again</message>
+    </additionalInfo>
+</error>

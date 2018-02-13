@@ -1,0 +1,27 @@
+<org xmlns="http://www.arin.net/regrws/core/v1" >
+    <iso3166-1>
+        <name>UNITED STATES</name>
+        <code2>US</code2>
+        <code3>USA</code3>
+        <e164>1</e164>
+    </iso3166-1>
+    <streetAddress>
+        <line number="1">PO Box 232290</line>
+    </streetAddress>
+    <city>Centreville</city>
+    <iso3166-2>VA</iso3166-2>
+    <postalCode>20120</postalCode>
+    <comment>
+        <line number="1">This is ARIN's own org object</line>
+    </comment>
+    <registrationDate>1997-12-22T00:00:00-05:00</registrationDate>
+    <handle>ARIN</handle>
+    <orgName>American Registry for Internet Numbers</orgName>
+    <dbaName>ARIN</dbaName>
+    <pocLinks>
+        <pocLinkRef description="Admin" handle="ARIN-HOSTMASTER" function="AD"/>
+        <pocLinkRef description="Abuse" handle="ARIN-HOSTMASTER" function="AB"/>
+        <pocLinkRef description="Tech" handle="ARIN-HOSTMASTER" function="T"/>
+        <pocLinkRef description="NOC" handle="ARINN-ARIN" function="N"/>
+    </pocLinks>
+</org>

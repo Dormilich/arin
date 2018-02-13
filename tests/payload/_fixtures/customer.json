@@ -1,0 +1,23 @@
+{
+    "name": "American Registry for Internet Numbers",
+    "country": {
+        "name": "UNITED STATES",
+        "code2": "US",
+        "code3": "USA",
+        "e164": "1"
+    },
+    "handle": "C02478949",
+    "address": [
+        "3635 Concorde Pkwy",
+        "Ste 200"
+    ],
+    "city": "Chantilly",
+    "state": "VA",
+    "zip": "20151",
+    "comment": [
+        "This is ARIN's own customer object"
+    ],
+    "org": "ARIN",
+    "created": "2010-04-23T20:22:24-04:00",
+    "private": "false"
+}

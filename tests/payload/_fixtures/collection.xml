@@ -1,0 +1,16 @@
+<collection xmlns="http://www.arin.net/regrws/core/v1">
+    <phone>
+        <type>
+            <description>Office></description>
+            <code>O</code>
+        </type>
+        <number>+1.703.227.9840</number>
+    </phone>
+    <phone>
+        <type>
+            <description>Office</description>
+            <code>O</code>
+        </type>
+        <number>+1-703-227-0660</number>
+    </phone>
+</collection>

@@ -1,0 +1,14 @@
+{
+    "name": "0.76.in-addr.arpa.",
+    "key": [{
+        "algorithm": "5",
+        "digest": "0DC99D4B6549F83385214189CA48DC6B209ABB71",
+        "ttl": "86400",
+        "type": "1",
+        "keyTag": "264"
+    }],
+    "nameservers": [
+        "NS4.EXAMPLE.COM",
+        "NS5.EXAMPLE.COM"
+    ]
+}

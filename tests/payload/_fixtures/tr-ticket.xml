@@ -1,0 +1,10 @@
+<ticketedRequest xmlns="http://www.arin.net/regrws/core/v1" xmlns:ns2="http://www.arin.net/regrws/messages/v1">
+    <ticket>
+        <ticketNo>TICKETNO</ticketNo>
+        <createdDate>2011-01-25T16:17:18-05:00</createdDate>
+        <updatedDate>2012-02-28T17:41:17-05:00</updatedDate>
+        <webTicketType>NET_DELETE_REQUEST</webTicketType>
+        <webTicketStatus>PENDING_CONFIRMATION</webTicketStatus>
+        <webTicketResolution>ACCEPTED</webTicketResolution>
+    </ticket>
+</ticketedRequest>
