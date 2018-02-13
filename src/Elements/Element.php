@@ -12,7 +12,7 @@ use Dormilich\ARIN\Transformers\StringTransformer;
 /**
  * An Element represents a single XML tag without nested XML tags.
  */
-class Element implements XmlHandlerInterface, Transformable, Validatable
+class Element implements ElementInterface, XmlHandlerInterface, Transformable, Validatable, \JsonSerializable
 {
     /**
      * @var string $value The textContent of the element.
@@ -165,5 +165,13 @@ class Element implements XmlHandlerInterface, Transformable, Validatable
         foreach ( $node->attributes() as $name => $value ) {
             $this->attributes[ $name ] = (string) $value;
         }
+    }
+
+    /**
+     * @see http://php.net/JsonSerializable
+     */
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

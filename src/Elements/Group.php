@@ -4,15 +4,16 @@
 namespace Dormilich\ARIN\Elements;
 
 use Dormilich\ARIN\XmlHandlerInterface;
+use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Exceptions\ParserException;
 use Dormilich\ARIN\Exceptions\ValidationException;
 use Dormilich\ARIN\Traits;
-use Dormilich\ARIN\Transformers\NonTransformer;
+use Dormilich\ARIN\Transformers\StackTransformer;
 
 /**
  * A group represents a list of Elements or Payloads.
  */
-class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAccess, \Countable, \Iterator
+class Group implements GroupInterface, XmlHandlerInterface, Transformable, Validatable, \ArrayAccess, \Countable, \Iterator, \JsonSerializable
 {
     /**
      * @var XmlHandlerInterface[] $elements 
@@ -50,7 +51,8 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
      */
     protected function getDefaultTransformer()
     {
-        return new NonTransformer;
+        // an empty transformer
+        return new StackTransformer;
     }
 
     /**
@@ -131,15 +133,19 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
      */
     protected function loop( $value )
     {
+        if ( is_array( $value ) ) {
+            return $value;
+        }
+        // payloads are traversable but must be used as is
+        if ( $value instanceof Payload ) {
+            return [ $value ];
+        }
+        // groups fall in this category
         if ( $value instanceof \Traversable ) {
             return $value;
         }
 
-        if ( ! is_array( $value ) ) {
-            $value = [ $value ];
-        }
-
-        return $value;
+        return [ $value ];
     }
 
     /**
@@ -166,9 +172,9 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
     }
 
     /**
-     * Convert the element object into an XML node.
+     * Convert the group object into an XML node.
      * 
-     * @param SimpleXMLElement $node The parent XML node to append the element to.
+     * @param SimpleXMLElement $node The parent XML node to append the group to.
      * @return SimpleXMLElement
      */
     public function xmlAppend( \SimpleXMLElement $node )
@@ -178,8 +184,8 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
         }
 
         $elem = $node->addChild( $this->getTag(), NULL, $this->getNamespace() );
-
-        foreach ( $this->elements as $child ) {
+        // jsonSerialize() returns a list of only valid elements
+        foreach ( $this->jsonSerialize() as $child ) {
             $child->xmlAppend( $elem );
         }
 
@@ -223,7 +229,8 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
         if ( class_exists( $payload ) ) {
             $elem = new $payload;
         }
-        // there may be cases where a simple element has the same name as a payload
+        // there are cases where a simple element has the same name as a payload
+        // e.g. message in the error payload
         if ( ! $this->validate( $elem ) ) {
             $elem = $this->transformer->transform( $child );
         }
@@ -386,5 +393,16 @@ class Group implements XmlHandlerInterface, Transformable, Validatable, \ArrayAc
         if ( $this->arrayKeyExists( $offset ) ) {
             array_splice( $this->elements, $offset, 1 );
         }
+    }
+
+    /**
+     * @see http://php.net/JsonSerializable
+     */
+    public function jsonSerialize()
+    {
+        // an element may have been invalidated after adding it to the group
+        return array_filter( $this->elements, function ( XmlHandlerInterface $elem ) {
+            return $elem->isValid();
+        } );
     }
 }

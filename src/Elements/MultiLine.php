@@ -14,7 +14,7 @@ use Dormilich\ARIN\Traits;
  * programmatically) this is an Element (although the common ground is so low 
  * that inheriting from Element is not feasible).
  */
-class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Iterator
+class MultiLine implements GroupInterface, XmlHandlerInterface, \ArrayAccess, \Countable, \Iterator, \JsonSerializable
 {
     /**
      * @var string[] $value The lines inside the text block.
@@ -386,5 +386,13 @@ class MultiLine implements XmlHandlerInterface, \ArrayAccess, \Countable, \Itera
             $msg = 'A line inside a text block may not be deleted.';
             throw new \RuntimeException( $msg );
         }
+    }
+
+    /**
+     * @see http://php.net/JsonSerializable
+     */
+    public function jsonSerialize()
+    {
+        return $this->values;
     }
 }
