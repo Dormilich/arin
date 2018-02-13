@@ -23,7 +23,7 @@ class StackTransformer implements DataTransformerInterface, \Countable
      */
     public function transform( $value )
     {
-        return array_reduce( $this->stack, function ( $val, $trans ) {
+        return array_reduce( $this->stack, function ( $val, DataTransformerInterface $trans ) {
             return $trans->transform( $val );
         }, $value );
     }
@@ -36,7 +36,7 @@ class StackTransformer implements DataTransformerInterface, \Countable
      */
     public function reverseTransform( $value )
     {
-        return array_reduce( array_reverse( $this->stack ), function ( $val, $trans ) {
+        return array_reduce( array_reverse( $this->stack ), function ( $val, DataTransformerInterface $trans ) {
             return $trans->reverseTransform( $val );
         }, $value );
     }
@@ -57,7 +57,7 @@ class StackTransformer implements DataTransformerInterface, \Countable
     /**
      * Remove the last transformer from the stack.
      * 
-     * @return DataTransformerInterface
+     * @return DataTransformerInterface|false
      */
     public function pop()
     {

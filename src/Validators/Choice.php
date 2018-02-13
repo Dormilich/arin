@@ -23,7 +23,7 @@ class Choice
     public function __construct( array $setup )
     {
         if ( isset( $setup[ 'choices' ] ) ) {
-            $this->choices = array_map( 'strval', $setup[ 'choices' ] );
+            $this->choices = array_map( 'strval', (array) $setup[ 'choices' ] );
         }
     }
 

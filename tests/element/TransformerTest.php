@@ -1,6 +1,11 @@
 <?php
 
+use Dormilich\ARIN\Primary;
 use Dormilich\ARIN\Elements\Element;
+use Dormilich\ARIN\Payloads\Customer;
+use Dormilich\ARIN\Payloads\Net;
+use Dormilich\ARIN\Payloads\Org;
+use Dormilich\ARIN\Payloads\Poc;
 use Dormilich\ARIN\Transformers as TF;
 use PHPUnit\Framework\TestCase;
 
@@ -36,21 +41,21 @@ class TransformerTest extends TestCase
         $internal = $tf->transform( $in );
         $value = $tf->reverseTransform( $internal );
 
-        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $out, $internal , 'internal' );
         $this->assertSame( $out, $value, 'output' );
     }
 
     /**
      * @dataProvider intInputProvider
      */
-    public function testIntegerTransformer( $in, $out )
+    public function testIntegerTransformer( $in, $val, $out )
     {
         $tf = new TF\IntegerTransformer;
 
         $internal = $tf->transform( $in );
         $value = $tf->reverseTransform( $internal );
 
-        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $val, $internal , 'internal' );
         $this->assertSame( $out, $value, 'output' );
     }
 
@@ -69,14 +74,14 @@ class TransformerTest extends TestCase
     /**
      * @dataProvider boolInputProvider
      */
-    public function testBooleanTransformer( $in, $out )
+    public function testBooleanTransformer( $in, $val, $out )
     {
         $tf = new TF\BooleanTransformer;
 
         $internal = $tf->transform( $in );
         $value = $tf->reverseTransform( $internal );
 
-        $this->assertTrue( is_string( $internal ), 'internal' );
+        $this->assertSame( $val, $internal , 'internal' );
         $this->assertSame( $out, $value, 'output' );
     }
 
@@ -103,6 +108,18 @@ class TransformerTest extends TestCase
 
         $this->assertSame( 'FOO', $internal, 'internal' );
         $this->assertSame( 'foo', $value, 'output' );
+    }
+
+    public function testNonTransformer()
+    {
+        $tf = new TF\StackTransformer;
+        $input = new stdClass;
+
+        $internal = $tf->transform( $input );
+        $value = $tf->reverseTransform( $internal );
+
+        $this->assertSame( $input, $internal, 'internal' );
+        $this->assertSame( $input, $value, 'output' );
     }
 
     public function testStackTransformer()
@@ -207,16 +224,28 @@ class TransformerTest extends TestCase
         $this->assertSame( 'xyz', $data);
     }
 
-    public function testNonTransformer()
+    /**
+     * @dataProvider handleInputProvider
+     */
+    public function testHandleTransformerInput( $in, $val, $class )
     {
-        $tf = new TF\NonTransformer;
-        $input = new stdClass;
+        $tf = new TF\HandleTransformer;
 
-        $internal = $tf->transform( $input );
-        $value = $tf->reverseTransform( $internal );
+        $internal = $tf->transform( $in );
+        $obj = $tf->reverseTransform( $internal );
 
-        $this->assertSame( $input, $internal, 'internal' );
-        $this->assertSame( $input, $value, 'output' );
+        $this->assertSame( $val, $internal, 'internal' );
+        $this->assertInstanceOf( $class, $obj, 'output class' );
+        $this->assertSame( $val, $obj->getHandle(), 'output handle' );
+    }
+
+    public function testHandleTransformerIgnoresUnknownHandle()
+    {
+        $tf = new TF\HandleTransformer;
+
+        $obj = $tf->reverseTransform( 'abc' );
+
+        $this->assertFalse( is_object( $obj ) );
     }
 
     // test payloads
@@ -226,42 +255,46 @@ class TransformerTest extends TestCase
         $mock = $this->createMock( 'Exception' );
         $mock->method( '__toString' )->willReturn( 'phpunit' );
 
+        $obj = $this->createMock( Primary::class );
+        $obj->method( 'getHandle' )->willReturn( 'TEST-ARIN' );
+
         return [
             [ 'foo', 'foo' ],
             [ false, 'false' ],
             [ 3.14,  '3.14' ],
             [ -42,   '-42' ],
             [ $mock, 'phpunit' ],
+            [ $obj,  'TEST-ARIN' ],
         ];
     }
 
     public function intInputProvider()
     {
         return [
-            [ '28',   28 ],
-            [ '+51',  51 ],
-            [ '-17', -17 ],
-            [ 42, 42 ],
-            [ +3,  3 ],
-            [ -9, -9 ],
+            [ '28', '28', 28 ],
+            [ '+51', '51', 51 ],
+            [ '-17', '-17', -17 ],
+            [ 42, '42', 42 ],
+            [ +3, '3', 3 ],
+            [ -9, '-9', -9 ],
         ];
     }
 
     public function boolInputProvider()
     {
         return [
-            [ true,  true ],
-            [ false, false ],
-            [ 'true',  true ],
-            [ 'false', false ],
-            [ 'yes', true ],
-            [ 'no',  false ],
-            [ 'on',  true ],
-            [ 'off', false ],
-            [ '1', true ],
-            [  1,  true ],
-            [ '0', false ],
-            [  0,  false ],
+            [ true, 'true', true ],
+            [ false, 'false', false ],
+            [ 'true', 'true', true ],
+            [ 'false', 'false', false ],
+            [ 'yes', 'true', true ],
+            [ 'no', 'false', false ],
+            [ 'on', 'true', true ],
+            [ 'off', 'false', false ],
+            [ '1', 'true', true ],
+            [  1, 'true', true ],
+            [ '0', 'false', false ],
+            [  0, 'false', false ],
         ];
     }
 
@@ -281,6 +314,20 @@ class TransformerTest extends TestCase
         return [
             [ true ],
             [ false ],
+        ];
+    }
+
+    public function handleInputProvider()
+    {
+        $obj = $this->createMock( Primary::class );
+        $obj->expects( $this->once() )->method( 'getHandle' )->willReturn( 'TEST-ARIN' );
+
+        return [
+            [ $obj, 'TEST-ARIN', Poc::class ],
+            [ 'org-42', 'ORG-42', Org::class ],
+            [ 'C12345', 'C12345', Customer::class ],
+            [ 'NET-10-0-0-0-1', 'NET-10-0-0-0-1', Net::class ],
+            [ 'NET6-2001-db8-1', 'NET6-2001-DB8-1', Net::class ],
         ];
     }
 }

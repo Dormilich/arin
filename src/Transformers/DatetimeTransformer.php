@@ -7,11 +7,18 @@ use Dormilich\ARIN\Exceptions\DataTransformationException;
 
 /**
  * Convert dates based upon a `DateTimeInterface` implementation. 
- * The transformation converts the timestamp to UTC, the reverse transformation 
+ * The transformation converts the timestamp to UTC (?), the reverse transformation 
  * converts it back to the configured timezone.
+ * 
+ * If a custom date object is used, NULL values must be treated accordingly.
  */
 class DatetimeTransformer implements DataTransformerInterface
 {
+    /**
+     * @var DateTimeZone
+     */
+    protected $xmlTimezone = 'UTC'; // America/New_York ?
+
     /**
      * @var DateTimeZone
      */
@@ -22,13 +29,19 @@ class DatetimeTransformer implements DataTransformerInterface
      */
     protected $dateClass = 'DateTimeImmutable';
 
-    public function __construct( \DateTimeInterface $date = NULL )
-    {
-        $this->timezone = $this->getTimezone( $date );
+    /**
+     * @var string XML date format
+     */
+    protected $format = DATE_RFC3339;
 
+    public function __construct( \DateTimeInterface $date = NULL, $format = DATE_RFC3339 )
+    {
         if ( $date ) {
             $this->dateClass = get_class( $date );
         }
+        $this->format = (string) $format;
+        $this->timezone = $this->getTimezone( $date );
+        $this->xmlTimezone = new \DateTimeZone( $this->xmlTimezone );
     }
 
     /**
@@ -55,19 +68,17 @@ class DatetimeTransformer implements DataTransformerInterface
      */
     public function transform( $value )
     {
-        $utc = new \DateTimeZone( 'UTC' );
- 
-        $value = $this->setTimezone( $value, $utc );
+        $value = $this->setTimezone( $value, $this->xmlTimezone );
 
         if ( $value instanceof \DateTimeInterface ) {
-            return $value->format( 'c' );
+            return $value->format( $this->format );
         }
 
         try {
             // read date in current timezone and convert to UTC
-            $date = new \DateTime( $value, $this->timezone );
-            $date->setTimezone( $utc );
-            return $date->format( 'c' );
+            $date = $this->createDate( $value, $this->timezone );
+            $date->setTimezone( $this->xmlTimezone );
+            return $date->format( $this->format );
         } catch ( \Exception $e ) {
             return $value;
         }
@@ -89,8 +100,8 @@ class DatetimeTransformer implements DataTransformerInterface
             return $value;
         }
 
-        $utc = new \DateTimeZone( 'UTC' );
-        $date = new $class( $value, $utc );
+        $value = $this->createDate( $value, $this->xmlTimezone )->format( 'c' );
+        $date = new $class( $value, $this->xmlTimezone );
         $date = $this->setTimezone( $date, $this->timezone );
 
         return $date;
@@ -113,5 +124,19 @@ class DatetimeTransformer implements DataTransformerInterface
         }
 
         return $date;
+    }
+
+    /**
+     * Create a date object first trying the expected format before using the 
+     * value as is.
+     * 
+     * @param mixed $date Date string.
+     * @param DateTimeZone $tz 
+     * @return DateTime
+     * @throws Exception Invalid argument for DateTime constructor.
+     */
+    private function createDate( $date, \DateTimeZone $tz )
+    {
+        return date_create_from_format( $this->format, $date, $tz ) ?: new \DateTime( $date, $tz );
     }
 }

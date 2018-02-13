@@ -77,7 +77,34 @@ class ValidatorTest extends TestCase
         $this->assertFalse( $fail );
     }
 
+    /**
+     * @depends testChoice
+     */
+    public function testChoiceWithSingleValue()
+    {
+        $vd = new VD\Choice( [ 'choices' => 'foo' ] );
+
+        $pass = $this->callValidator( $vd, 'foo' );
+        $fail = $this->callValidator( $vd, 'invalid' );
+
+        $this->assertTrue( $pass );
+        $this->assertFalse( $fail );
+    }
+
     public function testDatetime()
+    {
+        $vd = new VD\Datetime;
+
+        $this->assertTrue( is_callable( $vd ), 'is callable' );
+
+        $pass = $this->callValidator( $vd, '1997-04-18' );
+        $fail = $this->callValidator( $vd, 'invalid' );
+
+        $this->assertTrue( $pass );
+        $this->assertFalse( $fail );
+    }
+
+    public function testDatetimeWithFormat()
     {
         $vd = new VD\Datetime( [ 'format' => 'Y-m-d' ] );
 
@@ -201,6 +228,30 @@ class ValidatorTest extends TestCase
         $this->assertTrue( $pass );
         $this->assertFalse( $fail );
         $this->assertFalse( $invalid );
+    }
+
+    public function testClassListWithSingleValue()
+    {
+        $vd = new VD\ClassList( [ 'choices' => Element::class ] );
+
+        $pass = $this->callValidator( $vd, new Element( 'test' ) );
+        $fail = $this->callValidator( $vd, 'invalid' );
+
+        $this->assertTrue( $pass );
+        $this->assertFalse( $fail );
+    }
+
+    public function testBase64()
+    {
+        $vd = new VD\Base64;
+
+        $this->assertTrue( is_callable( $vd ), 'is callable' );
+
+        $pass = $this->callValidator( $vd, 'REFUQQ==' );
+        $fail = $this->callValidator( $vd, '\invalid' );
+
+        $this->assertTrue( $pass );
+        $this->assertFalse( $fail );
     }
 
     public function ipValueProvider()

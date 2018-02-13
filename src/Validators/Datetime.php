@@ -11,7 +11,7 @@ class Datetime
     /**
      * @var string
      */
-    protected $format = 'c';
+    protected $format;
 
     /**
      * Create validator with the allowed values. The values may be of any type 
@@ -34,6 +34,14 @@ class Datetime
      */
     public function __invoke( $value )
     {
-        return is_object( date_create_from_format( $this->format, $value ) );
+        $date = false;
+
+        if ( $this->format ) {
+            $date = date_create_from_format( $this->format, $value );
+        }
+        else {
+            $date = date_create( $value );
+        }
+        return is_object( $date );
     }
 }

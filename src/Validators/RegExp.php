@@ -47,10 +47,10 @@ class RegExp
      */
     protected function testPattern()
     {
-        set_error_handler(function ( $code, $message ) {
+        set_error_handler( function ( $code, $message ) {
             restore_error_handler();
             throw new \LogicException( $message, $code );
-        });
+        } );
         preg_match( $this->pattern, NULL );
         restore_error_handler();
     }

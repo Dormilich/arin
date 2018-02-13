@@ -3,6 +3,7 @@
 
 namespace Dormilich\ARIN\Transformers;
 
+use Dormilich\ARIN\Primary;
 use Dormilich\ARIN\Payloads\Customer;
 use Dormilich\ARIN\Payloads\Net;
 use Dormilich\ARIN\Payloads\Org;

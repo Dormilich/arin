@@ -20,10 +20,10 @@ class CallbackTransformer implements DataTransformerInterface
      */
     protected $down;
 
-    public function __construct( callable $up, callable $down )
+    public function __construct( callable $up, callable $down = NULL )
     {
         $this->up = $up;
-        $this->down = $down;
+        $this->down = $down ?: [$this, 'noop'];
     }
 
     /**
@@ -46,5 +46,16 @@ class CallbackTransformer implements DataTransformerInterface
     public function reverseTransform( $value )
     {
         return call_user_func( $this->down, $value );
+    }
+
+    /**
+     * A default callback that does not modify the passed value.
+     * 
+     * @param mixed $value 
+     * @return mixed
+     */
+    protected function noop( $value )
+    {
+        return $value;
     }
 }
