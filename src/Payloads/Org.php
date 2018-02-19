@@ -11,7 +11,6 @@ use Dormilich\ARIN\Elements\MultiLine;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Elements\ReadOnly;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
-use Dormilich\ARIN\Transformers\HandleTransformer;
 use Dormilich\ARIN\Validators\ClassList;
 use Dormilich\ARIN\Validators\RegExp;
 
@@ -72,6 +71,8 @@ class Org extends Payload implements Primary
 
     protected function init()
     {
+        $upper = new CallbackTransformer( 'strtoupper' );
+
         $this->define( 'country', new Country );
 
         $this->define( 'address', new MultiLine( 'streetAddress' ) );
@@ -79,7 +80,7 @@ class Org extends Payload implements Primary
         $this->define( NULL, new Element( 'city' ) );
 
         $this->define( 'state', new Element( 'iso3166-2' ) )
-            ->apply( new CallbackTransformer( 'strtoupper' ) )
+            ->apply( $upper )
             ->test( new RegExp( [ 'pattern' => '/^[A-Z0-9]{1,3}$/' ] ) );
 
         $this->define( 'zip', new Element( 'postalCode' ) );
@@ -89,7 +90,7 @@ class Org extends Payload implements Primary
         $this->define( 'created', new Generated( 'registrationDate' ) );
 
         $this->define( NULL, new Generated( 'handle' ) )
-            ->apply( new HandleTransformer );
+            ->apply( $upper );
 
         $this->define( 'name', new ReadOnly( 'orgName' ) );
 

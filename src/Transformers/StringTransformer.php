@@ -16,7 +16,7 @@ class StringTransformer implements DataTransformerInterface
     public function transform( $value )
     {
         if ( is_bool( $value ) ) {
-            $value = var_export( $value, true );
+            $value = $value ? 'true' : 'false';
         }
         elseif ( is_scalar( $value ) ) {
             $value = (string) $value;

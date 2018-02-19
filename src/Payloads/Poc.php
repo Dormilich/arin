@@ -12,7 +12,6 @@ use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Elements\ReadOnly;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
 use Dormilich\ARIN\Transformers\ElementTransformer;
-use Dormilich\ARIN\Transformers\HandleTransformer;
 use Dormilich\ARIN\Validators\Choice;
 use Dormilich\ARIN\Validators\ClassList;
 use Dormilich\ARIN\Validators\Email;
@@ -98,7 +97,7 @@ class Poc extends Payload implements Primary
         $this->define( 'created', new Generated( 'registrationDate' ) );
 
         $this->define( NULL, new Generated( 'handle' ) )
-            ->apply( new HandleTransformer );
+            ->apply( $upper );
 
         $this->define( 'type', new ReadOnly( 'contactType' ) )
             ->apply( $upper )

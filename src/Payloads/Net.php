@@ -103,7 +103,7 @@ class Net extends Payload implements Primary
             ->apply( $htf );
 
         $this->define( NULL, new Generated( 'handle' ) )
-            ->apply( $htf );
+            ->apply( new CallbackTransformer( 'strtoupper' ) );
 
         $this->define( 'net', new Group( 'netBlocks' ))
             ->apply( $nb )

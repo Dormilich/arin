@@ -57,21 +57,21 @@ class Customer extends Payload implements Primary
 
     protected function init()
     {
-        $htf = new HandleTransformer;
+        $upper = new CallbackTransformer( 'strtoupper' );
 
         $this->define( 'name', new Element( 'customerName' ) );
 
         $this->define( 'country', new Country );
 
         $this->define( NULL, new Generated( 'handle' ) )
-            ->apply( $htf );
+            ->apply( $upper );
 
         $this->define( 'address', new MultiLine( 'streetAddress' ) );
 
         $this->define( NULL, new Element( 'city' ) );
 
         $this->define( 'state', new Element( 'iso3166-2' ) )
-            ->apply( new CallbackTransformer( 'strtoupper' ) )
+            ->apply( $upper )
             ->test( new RegExp( [ 'pattern' => '/^[A-Z0-9]{1,3}$/' ] ) );
 
         $this->define( 'zip', new Element( 'postalCode' ) );
@@ -79,7 +79,7 @@ class Customer extends Payload implements Primary
         $this->define( NULL, new MultiLine( 'comment' ) );
 
         $this->define( 'org', new Element( 'parentOrgHandle' ) )
-            ->apply( $htf );
+            ->apply( new HandleTransformer );
 
         $this->define( 'created', new Generated( 'registrationDate' ) );
 
