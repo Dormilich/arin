@@ -1,0 +1,22 @@
+{
+    "state": "VA",
+    "country": {
+        "name": null,
+        "code2": "US",
+        "code3": "USA",
+        "e164": 1
+    },
+    "email": [],
+    "address": [],
+    "city": "Chantilly",
+    "zip": "20151",
+    "comment": [],
+    "created": null,
+    "handle": "TEST-ARIN",
+    "type": "ROLE",
+    "company": null,
+    "firstName": null,
+    "middleName": null,
+    "lastName": null,
+    "phone": []
+}

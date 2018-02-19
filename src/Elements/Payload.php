@@ -60,10 +60,6 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
             $alias = $elem->getName();
         }
 
-        if ( array_key_exists( $alias, $this->elements ) ) {
-            throw new \LogicException( 'Duplicate attribute alias '.$alias );
-        }
-
         return $this->elements[ $alias ] = $elem;
     }
 
@@ -188,7 +184,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
      * Get a matching child object.
      * 
      * @param string $name Tag name or alias.
-     * @return Element|Group|MultiLine|Payload
+     * @return ElementInterface|Payload
      */
     public function attr( $name )
     {
@@ -244,7 +240,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
             $msg = 'Value [%s] cannot overwrite a %s Payload.';
             $type = is_object( $value ) ? get_class( $value ) : gettype( $value );
             $data = is_scalar( $value ) ? var_export( $value, true ) : $type;
-            throw new \UnexpectedValueException( sprintf( $msg, $data, ucfirst( $this->getName() ) ) );
+            throw new \UnexpectedValueException( sprintf( $msg, $data, ucfirst( $elem->getName() ) ) );
         }
 
         return $this;
@@ -271,7 +267,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
         }
         else {
             $msg = 'Cannot add a value to a non-group element (%s).';
-            throw new \UnexpectedValueException( sprintf( $msg, $name ) );
+            throw new \UnexpectedValueException( sprintf( $msg, $elem->getName() ) );
         }
 
         return $this;
@@ -304,7 +300,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
         }
 
         $elem = $node;
-        // do not append to the root node, if this is the root object
+        // create payload node, if this is not the root object
         if ( $node->getName() !== $this->getName() ) {
             $elem = $node->addChild( $this->getName(), NULL, $this->getNamespace() );
         }
@@ -335,26 +331,56 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
     }
 
     /**
-     * Parse an XML string into the respective payload object. If no suitable 
-     * payload class is found, put it into a group. 
+     * Parse an XML string into the respective payload object. 
      * 
-     * @param string $xmlString 
+     * @param string|SimpleXMLElement|DOMNode $xml 
      * @return Payload
      * @throws ErrorException XML reading error.
+     * @throws ParserException Invalid XML root element.
      */
-    public static function fromXML( $xmlString )
+    public static function fromXML( $xml )
     {
-        set_error_handler( function ( $code, $msg, $file, $line ) {
-            restore_error_handler();
-            throw new \ErrorException( $msg, 0, $code, $file, $line );
-        } );
-        $xml = simplexml_load_string( $xmlString );
-        restore_error_handler();
-
+        $xml = self::toSimpleXml( $xml );
         $payload = self::getPayloadClass( $xml );
         $payload->xmlParse( $xml );
 
         return $payload;
+    }
+
+    /**
+     * convert XML input into a SimpleXML object.
+     * 
+     * @param string|SimpleXMLElement|DOMNode $xml 
+     * @return SimpleXMLElement
+     * @throws ErrorException XML reading error.
+     */
+    private static function toSimpleXml( $xml )
+    {
+        if ( $xml instanceof \DOMElement ) {
+            $xml = $xml->ownerDocument;
+        }
+        if ( $xml instanceof \DOMDocument ) {
+            $xml = simplexml_import_dom( $xml->documentElement );
+        }
+        if ( $xml instanceof \SimpleXMLElement ) {
+            return $xml;
+        }
+        if ( ! $xml ) {
+            $msg = 'Empty XML document cannot be parsed into a Payload.';
+            throw new \ErrorException( $msg, 0, LIBXML_ERR_FATAL );
+        }
+
+        $prev = libxml_use_internal_errors( true );
+        $xml = simplexml_load_string( (string) $xml );
+        $errors = libxml_get_errors();
+        libxml_clear_errors();
+        libxml_use_internal_errors( $prev );
+
+        if ( $e = reset( $errors ) ) {
+            throw new \ErrorException( $e->message, $e->code, $e->level, '', $e->line );
+        }
+
+        return $xml;
     }
 
     /**
@@ -373,7 +399,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
             return new $class;
         }
 
-        $msg = sprintf( 'Payload %s is not known.', $name );
+        $msg = sprintf( 'Payload "%s" is not known.', $name );
         throw new ParserException( $msg );
     }
 
@@ -451,7 +477,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
      * 
      * @see http://php.net/ArrayAccess
      * @param string $offset Element name or alias.
-     * @return ElementInterface
+     * @return ElementInterface|Payload
      * @throws NotFoundException
      */
     public function offsetGet( $offset )
