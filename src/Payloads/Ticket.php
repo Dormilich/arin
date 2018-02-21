@@ -9,6 +9,7 @@ use Dormilich\ARIN\Elements\Group;
 use Dormilich\ARIN\Elements\Generated;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Transformers\BooleanTransformer;
+use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Validators\ClassList;
 
 /**
@@ -50,6 +51,8 @@ class Ticket extends Payload implements XmlSerializable
     {
         $uri = 'http://www.arin.net/regrws/shared-ticket/v1';
 
+        $date = new DatetimeTransformer;
+
         $this->define( NULL, new Group( 'messages' ) )
             ->test( new ClassList( [ 'choices' => Message::class ] ) );
 
@@ -63,13 +66,17 @@ class Ticket extends Payload implements XmlSerializable
 
         $this->define( 'org', new Element( 'ns4:orgHandle', $uri ) );
 
-        $this->define( 'created', new Generated( 'createdDate' ) );
+        $this->define( 'created', new Generated( 'createdDate' ) )
+            ->apply( $date );
 
-        $this->define( 'resolved', new Generated( 'resolvedDate' ) );
+        $this->define( 'resolved', new Generated( 'resolvedDate' ) )
+            ->apply( $date );
 
-        $this->define( 'closed', new Generated( 'closedDate' ) );
+        $this->define( 'closed', new Generated( 'closedDate' ) )
+            ->apply( $date );
 
-        $this->define( 'updated', new Generated( 'updatedDate' ) );
+        $this->define( 'updated', new Generated( 'updatedDate' ) )
+            ->apply( $date );
 
         $this->define( 'type', new Generated( 'webTicketType' ) );
 

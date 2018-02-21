@@ -16,6 +16,7 @@ use Dormilich\ARIN\Transformers\IntegerTransformer;
 use Dormilich\ARIN\Transformers\HandleTransformer;
 use Dormilich\ARIN\Validators\ClassList;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
+use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Transformers\ElementTransformer;
 use Dormilich\ARIN\Validators\NamedElement;
 use Dormilich\Http\NetworkInterface;
@@ -97,7 +98,8 @@ class Net extends Payload implements Primary
 
         $this->define( NULL, new MultiLine( 'comment' ) );
 
-        $this->define( 'created', new Generated( 'registrationDate' ) );
+        $this->define( 'created', new Generated( 'registrationDate' ) )
+            ->apply( new DatetimeTransformer );
 
         $this->define( 'org', new ReadOnly( 'orgHandle' ) )
             ->apply( $htf );

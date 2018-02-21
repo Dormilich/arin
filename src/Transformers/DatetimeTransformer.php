@@ -17,7 +17,7 @@ class DatetimeTransformer implements DataTransformerInterface
     /**
      * @var DateTimeZone
      */
-    protected $xmlTimezone = 'UTC'; // America/New_York ?
+    protected $xmlTimezone = 'America/New_York';
 
     /**
      * @var DateTimeZone
@@ -75,7 +75,7 @@ class DatetimeTransformer implements DataTransformerInterface
         }
 
         try {
-            // read date in current timezone and convert to UTC
+            // read date in current timezone and convert to EST
             $date = $this->createDate( $value, $this->timezone );
             $date->setTimezone( $this->xmlTimezone );
             return $date->format( $this->format );

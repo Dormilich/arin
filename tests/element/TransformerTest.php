@@ -147,26 +147,26 @@ class TransformerTest extends TestCase
     {
         $tf = new TF\DatetimeTransformer;
 
-        $internal = $tf->transform( '1997-04-18 13:52:09' ); // UTC
-        $date = $tf->reverseTransform( $internal );
+        $internal = $tf->transform( '1997-04-18 13:52:09' );    // UTC => EST
+        $date = $tf->reverseTransform( $internal );             // EST => UTC
 
-        $this->assertSame( '1997-04-18T13:52:09+00:00', $internal, 'internal' );
+        $this->assertSame( '1997-04-18T09:52:09-04:00', $internal, 'internal' );
         $this->assertInstanceOf( 'DateTimeImmutable', $date, 'class' );
         $this->assertSame( '1997-04-18T13:52:09+00:00', $date->format( 'c' ), 'output' );
     }
 
     public function testConfiguredDatetimeTransformer()
     {
-        $setup = new DateTime( 'now', new \DateTimeZone( 'America/New_York' ) );
+        $setup = new DateTime( 'now', new \DateTimeZone( 'Indian/Christmas' ) );
         $tf = new TF\DatetimeTransformer( $setup );
 
-        $internal = $tf->transform( '1997-04-18 13:52:09' ); // America/New_York
+        $internal = $tf->transform( '1997-04-18 13:52:09' );
         $date = $tf->reverseTransform( $internal );
 
-        $this->assertSame( '1997-04-18T17:52:09+00:00', $internal, 'internal' );
+        $this->assertSame( '1997-04-18T02:52:09-04:00', $internal, 'internal' );
         $this->assertInstanceOf( 'DateTime', $date, 'class' );
         $this->assertNotSame( $setup, $date, 'separation' );
-        $this->assertSame( '1997-04-18T13:52:09-04:00', $date->format( 'c' ), 'output' );
+        $this->assertSame( '1997-04-18T13:52:09+07:00', $date->format( 'c' ), 'output' );
     }
 
     /**
@@ -183,16 +183,25 @@ class TransformerTest extends TestCase
 
     public function testDatetimeTransformObject()
     {
-        $setup = new DateTime( 'now', new DateTimeZone( 'America/New_York' ) );
+        $setup = new DateTime( 'now', new DateTimeZone( 'Indian/Christmas' ) );
         $tf = new TF\DatetimeTransformer( $setup );
 
         $data = new DateTimeImmutable( '1997-04-18 13:52:09', new DateTimeZone( 'Europe/Paris' ) );
         $pass = $tf->transform( $data );
-        $fail = $tf->transform( 'invalid' );
+        $date = $tf->reverseTransform( $pass );
 
         $this->assertSame( '1997-04-18T13:52:09+02:00', $data->format( 'c' ), 'input' );
-        $this->assertSame( '1997-04-18T11:52:09+00:00', $pass, 'internal' );
-        $this->assertSame( 'invalid', $fail, 'invalid' );
+        $this->assertSame( '1997-04-18T07:52:09-04:00', $pass, 'internal' );
+        $this->assertSame( '1997-04-18T18:52:09+07:00', $date->format( 'c' ), 'output' );
+    }
+
+    public function testDatetimeTransformerIgnoresInvalidDate()
+    {
+        $tf = new TF\DatetimeTransformer;
+
+        $fail = $tf->transform( 'invalid' );
+
+        $this->assertSame( 'invalid', $fail );
     }
 
     public function testElementTransformer()

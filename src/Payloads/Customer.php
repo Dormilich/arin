@@ -10,6 +10,7 @@ use Dormilich\ARIN\Elements\MultiLine;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Transformers\BooleanTransformer;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
+use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Transformers\HandleTransformer;
 use Dormilich\ARIN\Validators\RegExp;
 
@@ -81,7 +82,8 @@ class Customer extends Payload implements Primary
         $this->define( 'org', new Element( 'parentOrgHandle' ) )
             ->apply( new HandleTransformer );
 
-        $this->define( 'created', new Generated( 'registrationDate' ) );
+        $this->define( 'created', new Generated( 'registrationDate' ) )
+            ->apply( new DatetimeTransformer );
 
         $this->define( 'private', new Element( 'privateCustomer' ) )
             ->apply( new BooleanTransformer );

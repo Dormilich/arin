@@ -9,6 +9,7 @@ use Dormilich\ARIN\Elements\Group;
 use Dormilich\ARIN\Elements\MultiLine;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
+use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Validators\Choice;
 use Dormilich\ARIN\Validators\ClassList;
 
@@ -44,7 +45,8 @@ class Message extends Payload implements XmlSerializable
 
         $this->define( 'id', new Generated( 'ns2:messageId', $xmlns ) );
 
-        $this->define( 'created', new Generated( 'ns2:createdDate', $xmlns ) );
+        $this->define( 'created', new Generated( 'ns2:createdDate', $xmlns ) )
+            ->apply( new DatetimeTransformer );
 
         $this->define( NULL, new Element( 'subject' ) );
 

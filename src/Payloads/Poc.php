@@ -11,6 +11,7 @@ use Dormilich\ARIN\Elements\MultiLine;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Elements\ReadOnly;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
+use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Transformers\ElementTransformer;
 use Dormilich\ARIN\Validators\Choice;
 use Dormilich\ARIN\Validators\ClassList;
@@ -94,7 +95,8 @@ class Poc extends Payload implements Primary
 
         $this->define( NULL, new MultiLine( 'comment' ) );
 
-        $this->define( 'created', new Generated( 'registrationDate' ) );
+        $this->define( 'created', new Generated( 'registrationDate' ) )
+            ->apply( new DatetimeTransformer );
 
         $this->define( NULL, new Generated( 'handle' ) )
             ->apply( $upper );
