@@ -18,7 +18,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     /**
      * @var XmlHandlerInterface[] $elements 
      */
-    protected $elements = [];
+    private $elements = [];
 
     use Traits\DataTransformation
       , Traits\DataValidation
@@ -56,10 +56,12 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
-     * Define the default validator callback. The validator must only check the 
-     * validity of the object type, not the object value itself, otherwise the 
-     * XML parser will error out.
+     * Define the default validator callback. The validator should only check 
+     * the validity of the object type, as the objects can be invalidated after 
+     * adding them to the collection. A validator should always be defined to 
+     * aid XML deserialisation.
      * 
+     * @see Group::createObjectFrom()
      * @return callable
      */
     protected function getDefaultValidator()
@@ -68,7 +70,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
-     * Get the transformed text content of the element.
+     * Get the transformed text content of the collection.
      * 
      * @return array|string[]
      */
@@ -80,9 +82,9 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
+     * Set the content of the collection.
      * 
-     * 
-     * @param string|string[] $value New element text content.
+     * @param string|string[] $value New collection text content.
      * @return self
      */
     public function setValue( $value )
@@ -95,7 +97,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
-     * Add a single data item to the collection.
+     * Add content to the collection.
      * 
      * @param string $value 
      * @return self
@@ -151,6 +153,10 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     /**
      * Convert the data item into a string.
      * 
+     * Note:
+     *  This does not check if the value itself is valid as objects can be 
+     *  invalidated after they are added to the group.
+     * 
      * @param mixed $value 
      * @return string
      * @throws ValidationException Value not stringifiable.
@@ -159,9 +165,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     {
         $value = $this->transform( $value );
 
-        // all child elements must implement an XML handler
-        // otherwise this class’ XML handling will fail
-        if ( $value instanceof XmlHandlerInterface and $value->isValid() and $this->validate( $value ) ) {
+        if ( $value instanceof XmlHandlerInterface and $this->validate( $value ) ) {
             return $value;
         }
 
@@ -184,8 +188,8 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
         }
 
         $elem = $node->addChild( $this->getTag(), NULL, $this->getNamespace() );
-        // jsonSerialize() returns a list of only valid elements
-        foreach ( $this->jsonSerialize() as $child ) {
+
+        foreach ( $this->elements as $child ) {
             $child->xmlAppend( $elem );
         }
 
@@ -223,7 +227,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     private function createObjectFrom( \SimpleXMLElement $child )
     {
-        $elem = null;
+        $elem = NULL;
 
         $payload = 'Dormilich\\ARIN\\Payloads\\' . ucfirst( $child->getName() );
         if ( class_exists( $payload ) ) {
@@ -265,14 +269,21 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
-     * Number of lines assigned.
+     * Number of objects assigned. If you call this method directly, it will 
+     * count the number of valid objects if the argument is truthy.
      *
      * @see http://php.net/Countable
      * @return integer
      */
     public function count()
     {
-        return count( $this->elements );
+        $elements = $this->elements;
+
+        if ( func_num_args() === 1 and func_get_arg( 0 ) ) {
+            $elements = $this->jsonSerialize();
+        }
+
+        return count( $elements );
     }
 
     /**
@@ -400,7 +411,6 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function jsonSerialize()
     {
-        // an element may have been invalidated after adding it to the group
         return array_filter( $this->elements, function ( XmlHandlerInterface $elem ) {
             return $elem->isValid();
         } );

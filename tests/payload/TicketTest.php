@@ -59,8 +59,8 @@ class TicketTest extends TestCase
         // prevent warning-to-exception
         $xml = @$t->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $t->xmlSerialize();
     }
@@ -84,7 +84,7 @@ class TicketTest extends TestCase
         $t[ 'status' ] = 'CLOSED';
         $t[ 'resolution' ] = 'ANSWERED';
 
-        $xml = $t->xmlSerialize()->asXML();
+        $xml = $t->xmlSerialize();
 
         $this->assertTrue( $t->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . '.xml', $xml );

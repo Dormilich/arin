@@ -14,7 +14,6 @@ class ErrorTest extends TestCase
         $e = Payload::fromXML( $xml );
 
         $this->assertInstanceOf( Error::class, $e );
-        $this->assertFalse( $e->isValid() );
 
         return $e;
     }

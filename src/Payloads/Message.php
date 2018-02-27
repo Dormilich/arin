@@ -68,16 +68,14 @@ class Message extends Payload implements XmlSerializable
 
     public function isValid()
     {
-        // request
-        $subj = $this->attr( 'subject' )->isValid();
-        $text = $this->attr( 'text' )->isValid();
-        $cat  = $this->attr( 'category' )->isValid();
-        $att  = $this->attr( 'attachments' )->isValid();
-
-        return ( $subj and $cat and ( $text or $att ) );
+        $valid = $this->validity();
+        return $valid[ 'id' ] 
+            ? $this->validUpdate( $valid )
+            : $this->validCreate( $valid )
+        ;
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Message Payload "%s" is not valid for submission.';
@@ -85,7 +83,25 @@ class Message extends Payload implements XmlSerializable
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
+    }
+
+    protected function validCreate( array $valid )
+    {
+        $list[] = ! $valid[ 'id' ];
+        $list[] = ! $valid[ 'created' ];
+        $list[] = ! $valid[ 'references' ];
+        $list[] = $valid[ 'category' ];
+        #$list[] = $valid[ 'subject' ];
+
+        return array_reduce( $list, function ( $bool, $test ) {
+            return $bool and $test;
+        }, $valid[ 'text' ] or $valid[ 'attachments' ] );
+    }
+
+    protected function validUpdate( array $valid )
+    {
+        return $this->validate( [ 'id', 'created', 'category' ], $valid );
     }
 }

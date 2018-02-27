@@ -71,17 +71,6 @@ class GroupTest extends TestCase
      * @expectedException Dormilich\ARIN\Exceptions\ValidationException
      * @expectedExceptionMessage Value [Dormilich\ARIN\Elements\Element] is not allowed for the [test] group element.
      */
-    public function testGroupFromEmptyObjectFails()
-    {
-        $e = new Element( 'xxx' );
-        $g = new Group( 'test' );
-        $g->addValue( $e );
-    }
-
-    /**
-     * @expectedException Dormilich\ARIN\Exceptions\ValidationException
-     * @expectedExceptionMessage Value [Dormilich\ARIN\Elements\Element] is not allowed for the [test] group element.
-     */
     public function testNamedGroupFromInvalidObjectFails()
     {
         $vd = new NamedElement( [ 'name' => 'phpunit' ] );

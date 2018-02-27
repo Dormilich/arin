@@ -91,19 +91,19 @@ class Customer extends Payload implements Primary
 
     public function getHandle()
     {
-        return $this->attr( 'handle' )->jsonSerialize();
+        return $this->get( 'handle' );
     }
 
-    // constraints based on test runs
     public function isValid()
     {
-        $elements = $this->find( 'address', 'name', 'country', 'city' ); 
-        return array_reduce( $elements, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry and $item->isValid();
-        }, true );
+        $valid = $this->validity();
+        return $valid[ 'handle' ] 
+            ? $this->validUpdate( $valid )
+            : $this->validCreate( $valid )
+        ;
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Customer Payload %s is not valid for submission.';
@@ -111,7 +111,25 @@ class Customer extends Payload implements Primary
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
+    }
+
+    protected function validCreate( array $valid )
+    {
+        $attr = [ 'org', 'name', 'address', 'city', 'country' ];
+
+        if ( $valid[ 'handle' ] or $valid[ 'created' ] ) {
+            return false;
+        }
+
+        return $this->validate( $attr, $valid );
+    }
+
+    protected function validUpdate( array $valid )
+    {
+        $attr = [ 'handle', 'org', 'created', 'name', 'address', 'city', 'country' ];
+
+        return $this->validate( $attr, $valid );
     }
 }

@@ -50,7 +50,7 @@ class Roa extends Payload implements XmlSerializable
         $this->define( 'data', new RoaData );
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Roa Payload "%s" is not valid for submission.';
@@ -58,8 +58,8 @@ class Roa extends Payload implements XmlSerializable
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
     }
 
     public function resourceClass()

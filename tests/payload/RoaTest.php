@@ -44,7 +44,7 @@ class RoaTest extends TestCase
      */
     public function testRoaXml( Roa $r )
     {
-        $xml = $r->xmlSerialize()->asXML();
+        $xml = $r->xmlSerialize();
 
         $this->assertTrue( $r->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -88,8 +88,8 @@ class RoaTest extends TestCase
         // prevent warning-to-exception
         $xml = @$roa->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $roa->xmlSerialize();
     }

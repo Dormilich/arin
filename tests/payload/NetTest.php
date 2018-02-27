@@ -46,7 +46,7 @@ class NetTest extends TestCase
      */
     public function testNetXml( Net $n )
     {
-        $xml = $n->xmlSerialize()->asXML();
+        $xml = $n->xmlSerialize();
 
         $this->assertTrue( $n->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -64,8 +64,8 @@ class NetTest extends TestCase
         // prevent warning-to-exception
         $xml = @$n->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $n->xmlSerialize();
     }

@@ -25,7 +25,7 @@ class PhoneTest extends TestCase
      */
     public function testPhoneXml( Phone $phone )
     {
-        $xml = $phone->xmlSerialize()->asXML();
+        $xml = $phone->xmlSerialize();
 
         $this->assertTrue( $phone->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file, $xml );
@@ -43,8 +43,8 @@ class PhoneTest extends TestCase
         // prevent warning-to-exception
         $xml = @$phone->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $phone->xmlSerialize();
     }

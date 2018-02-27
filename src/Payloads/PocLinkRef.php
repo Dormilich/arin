@@ -41,8 +41,9 @@ class PocLinkRef extends Payload
 
     public function isValid()
     {
-        return $this->attr( 'function' )->isValid()
-           and $this->attr( 'handle' )->isValid();
+        $valid = $this->validity();
+
+        return $valid[ 'function' ] and $valid[ 'handle' ];
     }
 
     /**

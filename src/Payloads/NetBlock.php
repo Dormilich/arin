@@ -108,11 +108,8 @@ class NetBlock extends Payload
 
     public function isValid()
     {
-        $type  = $this->attr( 'type' )->isValid();
-        $start = $this->attr( 'start' )->isValid();
-        $end   = $this->attr( 'end' )->isValid();
-        $cidr  = $this->attr( 'length' )->isValid();
+        $valid = $this->validity();
 
-        return $type and $start and ( $end or $cidr );
+        return $valid[ 'type' ] and $valid[ 'start' ] and ( $valid[ 'end' ] or $valid[ 'length' ] );
     }
 }

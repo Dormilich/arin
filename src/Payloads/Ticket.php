@@ -95,32 +95,23 @@ class Ticket extends Payload implements XmlSerializable
 
     public function isValid()
     {
-        $valid = $this->find( 'ticketNo', 'created', 'type', 'status', 'resolution' );
+        $attr = [ 'ticketNo', 'resolved', 'type', 'resolution' ];
+        $valid = $this->validity();
+        $resolved = $this->validate( $attr, $valid ) and ! $valid[ 'closed' ];
 
-        return array_reduce( $valid, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry and $item->isValid();
-        }, true );
+        return $valid and $this->get( 'status' ) === 'CLOSED';
     }
 
-    private function modifyValid()
+    public function xmlSerialize()
     {
-        $modify = $this->find( 'ticketNo', 'resolved', 'type', 'resolution' );
-
-        return array_reduce( $modify, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry and $item->isValid();
-        }, $this->get( 'status' ) === 'CLOSED' );
-    }
-
-    public function xmlSerialize( $encoding = 'UTF-8' )
-    {
-        if ( ! $this->modifyValid() ) {
+        if ( ! $this->isValid() ) {
             $msg = 'Ticket Payload "%s" is not valid for submission.';
             $msg = sprintf( $msg, $this->getHandle() ); 
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
     }
 
     public function msgRefs()

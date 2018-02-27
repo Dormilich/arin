@@ -38,11 +38,12 @@ class Phone extends Payload implements XmlSerializable
 
     public function isValid()
     {
-        return  $this->attr( 'type' )->isValid()
-            and $this->attr( 'number' )->isValid();
+        $valid = $this->validity();
+
+        return $valid[ 'type' ] and $valid[ 'number' ];
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Phone Payload %s is not valid for submission.';
@@ -50,7 +51,7 @@ class Phone extends Payload implements XmlSerializable
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
     }
 }

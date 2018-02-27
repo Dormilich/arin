@@ -140,16 +140,19 @@ class Net extends Payload implements Primary
 
     public function getHandle()
     {
-        return $this->attr( 'handle' )->jsonSerialize();
+        return $this->get( 'handle' );
     }
 
-    // this one is quite tricky to figure out
     public function isValid()
     {
-        return $this->fixedModify() ? $this->validModify() : $this->validAssign();
+        $valid = $this->validity();
+        return $valid[ 'handle' ] 
+            ? $this->validUpdate( $valid )
+            : $this->validCreate( $valid )
+        ;
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Net Payload %s is not valid for submission.';
@@ -157,41 +160,29 @@ class Net extends Payload implements Primary
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
     }
 
-    private function fixedModify()
+    private function validCreate( array $valid )
     {
-        $fixed = $this->find( 'version', 'created', 'handle', 'netBlocks', 'parentNet' );
-        $fixed = array_reduce( $fixed, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry and $item->isValid();
-        }, true );
+        $list[] = ! $valid[ 'handle' ];
+        $list[] = ! $valid[ 'created' ];
+        $list[] = $valid[ 'net' ];
+        $list[] = $valid[ 'name' ];
+        $list[] = $valid[ 'parentNet' ];
 
-        $cust = $this->attr( 'customer' )->isValid();
-        $org  = $this->attr( 'org' )->isValid();
-
-        return $fixed and ( $cust or $org );
+        return array_reduce( $list, function ( $bool, $test ) {
+            return $bool and $test;
+        }, $valid[ 'customer' ] xor $valid[ 'org' ] );
     }
 
-    private function validModify()
+    private function validUpdate( array $valid )
     {
-        $mod = $this->find( 'comment', 'name', 'asn', 'poc' );
+        $attr = [ 'version', 'created', 'handle', 'net', 'parentNet', 'name' ];
 
-        return array_reduce( $mod, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry or $item->isValid();
-        }, false );
-    }
+        $pass = $this->validate( $attr, $valid );
 
-    private function validAssign()
-    {
-        $net  = $this->attr( 'net' )->isValid();
-        $name = $this->attr( 'name' )->isValid();
-        $ref  = $this->attr( 'parentNet' )->isValid();
-
-        $cust = $this->attr( 'customer' )->isValid();
-        $org  = $this->attr( 'org' )->isValid();
-
-        return $ref and $net and $name and ( $cust xor $org );
+        return $pass and ( $valid[ 'customer' ] xor $valid[ 'org' ] );
     }
 }

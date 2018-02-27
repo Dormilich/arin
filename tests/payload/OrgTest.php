@@ -44,7 +44,7 @@ class OrgTest extends TestCase
      */
     public function testOrgXml( Org $o )
     {
-        $xml = $o->xmlSerialize()->asXML();
+        $xml = $o->xmlSerialize();
 
         $this->assertTrue( $o->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -62,8 +62,8 @@ class OrgTest extends TestCase
         // prevent warning-to-exception
         $xml = @$o->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $o->xmlSerialize();
     }

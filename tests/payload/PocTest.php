@@ -43,7 +43,7 @@ class PocTest extends TestCase
      */
     public function testPocXml( Poc $p )
     {
-        $xml = $p->xmlSerialize()->asXML();
+        $xml = $p->xmlSerialize();
 
         $this->assertTrue( $p->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -61,8 +61,8 @@ class PocTest extends TestCase
         // prevent warning-to-exception
         $xml = @$p->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $p->xmlSerialize();
     }

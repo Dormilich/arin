@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\ARIN\Elements\Element;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Payloads\Delegation;
 use PHPUnit\Framework\TestCase;
@@ -43,7 +44,7 @@ class DelegationTest extends TestCase
      */
     public function testDelegationXml( Delegation $d )
     {
-        $xml = $d->xmlSerialize()->asXML();
+        $xml = $d->xmlSerialize();
 
         $this->assertTrue( $d->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -53,16 +54,16 @@ class DelegationTest extends TestCase
 
     /**
      * @expectedException PHPUnit_Framework_Error_Warning
-     * @expectedExceptionMessage Delegation Payload '0.76.in-addr.arpa.' is not valid for submission.
+     * @expectedExceptionMessage Delegation Payload is not valid for submission.
      */
     public function testInvalidDelegationEmitsWarningOnXmlSerialise()
     {
-        $d = new Delegation( '0.76.in-addr.arpa.' );
-        // prevent warning-to-exception
+        $d = new Delegation;
+         // prevent warning-to-exception
         $xml = @$d->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $d->xmlSerialize();
     }

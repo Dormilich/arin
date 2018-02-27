@@ -43,7 +43,7 @@ class CustomerTest extends TestCase
      */
     public function testCustomerXml( Customer $c )
     {
-        $xml = $c->xmlSerialize()->asXML();
+        $xml = $c->xmlSerialize();
 
         $this->assertTrue( $c->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -61,8 +61,8 @@ class CustomerTest extends TestCase
         // prevent warning-to-exception
         $xml = @$c->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $c->xmlSerialize();
     }

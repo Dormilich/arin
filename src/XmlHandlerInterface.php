@@ -32,7 +32,8 @@ interface XmlHandlerInterface
     public function xmlParse( \SimpleXMLElement $node );
 
     /**
-     * Return the validity of an Element, Payload or Element group.
+     * Return the validity of an Element, Payload or Element group regarding 
+     * submission to RegRWS.
      * 
      * @return boolean
      */

@@ -138,16 +138,43 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
     }
 
     /**
+     * Get the valitation status for each attribute.
+     * 
+     * @return array
+     */
+    protected function validity()
+    {
+        return array_map( function ( XmlHandlerInterface $item ) {
+            return $item->isValid();
+        }, $this->elements );
+    }
+
+    /**
+     * Check if each passed attribute is valid.
+     * 
+     * @param string[] $attr Attribute aliases.
+     * @param array|null $valid Validity list.
+     * @return boolean
+     */
+    protected function validate( array $attr, array $valid = NULL )
+    {
+        $valid = $valid ?: $this->validity();
+        $test = array_intersect_key( $valid, array_flip( $attr ) );
+        $pass = array_filter( $test );
+
+        return count( $test ) === count( $pass );
+    }
+
+    /**
      * Get all elements whose tag name matches the given value(s).
      * 
-     * @param mixed $name Tag name.
-     * @return array List of matching elements.
+     * @param string[] $name Tag names or aliases.
+     * @return XmlHandlerInterface[] List of matching elements.
      */
-    protected function find( $name )
+    protected function find( array $names )
     {
-        $list = func_get_args();
-        return array_filter( $this->elements, function ( XmlHandlerInterface $item, $alias ) use ( $list ) {
-            return in_array( $alias, $list, true ) or in_array( $item->getName(), $list, true );
+        return array_filter( $this->elements, function ( XmlHandlerInterface $item, $alias ) use ( $names ) {
+            return in_array( $alias, $names, true ) or in_array( $item->getName(), $names, true );
         }, ARRAY_FILTER_USE_BOTH );
     }
 
@@ -156,8 +183,8 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
      * case-insensitively.
      * 
      * @param mixed $name Tag name or alias.
-     * @return object|NULL First matching element or NULL if no matching 
-     *          element was found.
+     * @return XmlHandlerInterface|NULL First matching element or NULL if no 
+     *          matching element was found.
      */
     protected function fetch( $name )
     {

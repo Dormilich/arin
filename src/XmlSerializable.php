@@ -15,9 +15,9 @@ namespace Dormilich\ARIN;
 interface XmlSerializable
 {
     /**
-     * Create an XML document for this object.
+     * Create an XML string for this object.
      * 
-     * @return SimpleXMLElement
+     * @return string
      */
-    public function xmlSerialize( $encoding = 'UTF-8' );
+    public function xmlSerialize();
 }

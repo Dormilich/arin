@@ -60,7 +60,7 @@ class Country extends Payload
 
     public function isValid()
     {
-        return $this->attr( 'code2' )->isValid()
-            or $this->attr( 'code3' )->isValid();
+        $valid = $this->validity();
+        return $valid[ 'code2' ] or $valid[ 'code3' ];
     }
 }

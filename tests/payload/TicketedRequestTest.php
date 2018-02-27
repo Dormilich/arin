@@ -39,7 +39,6 @@ class TicketedRequestTest extends TestCase
         $tr = Payload::fromXML( $xml );
 
         $this->assertInstanceOf( Ticket::class, $tr[ 'ticket' ] );
-        $this->assertTrue( $tr[ 'ticket' ]->isValid() );
 
         return $tr;
     }

@@ -49,23 +49,22 @@ class Delegation extends Payload implements Primary
 
     public function getHandle()
     {
-        return $this->attr( 'name' )->jsonSerialize();
+        return $this->get( 'name' );
     }
 
     public function isValid()
     {
-        return $this->attr( 'nameservers' )->isValid();
+        return $this->attr( 'name' )->isValid();
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
-            $msg = 'Delegation Payload %s is not valid for submission.';
-            $msg = sprintf( $msg, var_export( $this->getHandle(), true ) ); 
+            $msg = 'Delegation Payload is not valid for submission.';
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
     }
 }

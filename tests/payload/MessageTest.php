@@ -44,7 +44,7 @@ class MessageTest extends TestCase
         $this->assertSame( $this->text, $m[ 'attachments' ][ 0 ][ 'data' ]->getValue() );
         $this->assertSame( $this->text, (string) $m );
 
-        $xml = $m->xmlSerialize()->asXML();
+        $xml = $m->xmlSerialize();
 
         $this->assertTrue( $m->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . 'xml', $xml );
@@ -62,8 +62,8 @@ class MessageTest extends TestCase
         // prevent warning-to-exception
         $xml = @$m->xmlSerialize();
 
-        $this->assertInstanceOf( 'SimpleXMLElement', $xml );
-        $this->assertSame( 0, count( $xml ) );
+        $sxe = simplexml_load_string( $xml );
+        $this->assertSame( 0, count( $sxe ) );
 
         $m->xmlSerialize();
     }

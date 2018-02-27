@@ -68,7 +68,9 @@ class Error extends Payload
      */
     public function isValid()
     {
-        return false;
+        $valid = $this->validity();
+
+        return $valid[ 'message' ] and $valid[ 'code' ];
     }
 
     /**

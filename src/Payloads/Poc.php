@@ -124,32 +124,14 @@ class Poc extends Payload implements Primary
 
     public function isValid()
     {
-        $elements = $this->find( 'type', 'country', 'address', 'city', 'email', 'phone', 'lastName' );
-
-        $required = array_reduce( $elements, function ( $carry, XmlHandlerInterface $item ) {
-            return $carry and $item->isValid();
-        }, true );
-
-        if ( ! $required ) {
-            return false;
-        }
-
-        $first = $this->attr( 'firstName' )->isValid();
-
-        switch ( $this->get( 'type' ) ) {
-            case 'PERSON':
-                return $first;
-
-            case 'ROLE':
-                return !$first and $this->attr( 'company' )->isValid();
-
-            default:
-                // can only happen if the validator is changed
-                return false;
-        }
+        $valid = $this->validity();
+        return $valid[ 'handle' ] 
+            ? $this->validUpdate( $valid )
+            : $this->validCreate( $valid )
+        ;
     }
 
-    public function xmlSerialize( $encoding = 'UTF-8' )
+    public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
             $msg = 'Poc Payload %s is not valid for submission.';
@@ -157,8 +139,41 @@ class Poc extends Payload implements Primary
             trigger_error( $msg, E_USER_WARNING );
         }
 
-        $root = $this->xmlCreate( $encoding );
-        return $this->xmlAppend( $root );
+        $root = $this->xmlCreate( 'UTF-8' );
+        return $this->xmlAppend( $root )->asXML();
+    }
+
+    private function validCreate( array $valid )
+    {
+        $attr = [ 'type', 'country', 'address', 'city', 'email', 'phone', 'lastName' ];
+
+        if ( $valid[ 'handle' ] or $valid[ 'created' ] ) {
+            return false;
+        }
+
+        return $this->validate( $attr, $valid ) and $this->validType( $valid );
+    }
+
+    private function validUpdate( array $valid )
+    {
+        $attr = [ 'handle', 'created', 'type', 'country', 'address', 'city', 'email', 'phone', 'lastName' ];
+
+        return $this->validate( $attr, $valid ) and ( $valid[ 'firstName' ] or $valid[ 'company' ] );
+    }
+
+    private function validType( array $valid )
+    {
+        switch ( $this->get( 'type' ) ) {
+            case 'PERSON':
+                return $valid[ 'firstName' ];
+
+            case 'ROLE':
+                return ! $valid[ 'firstName' ] and $valid[ 'company' ];
+
+            default:
+                // can only happen if the validator is changed
+                return false;
+        }
     }
 
     /**

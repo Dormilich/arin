@@ -36,8 +36,8 @@ class TicketedRequest extends Payload
      */
     public function has( $name )
     {
-        $elements = $this->children( true );
-        return isset( $elements[ $name ] );
+        $elements = $this->children();
+        return isset( $elements[ $name ] ) and (bool) $elements[ $name ]->getHandle();
     }
 
     /**
@@ -49,7 +49,7 @@ class TicketedRequest extends Payload
     public function attr( $name )
     {
         if ( $this->has( $name ) ) {
-            $elements = $this->children( true );
+            $elements = $this->children();
             return $elements[ $name ];
         }
 
