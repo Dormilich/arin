@@ -84,7 +84,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     /**
      * Set the content of the collection.
      * 
-     * @param string|string[] $value New collection text content.
+     * @param mixed $value New collection element(s).
      * @return self
      */
     public function setValue( $value )
@@ -411,8 +411,6 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function jsonSerialize()
     {
-        return array_filter( $this->elements, function ( XmlHandlerInterface $elem ) {
-            return $elem->isValid();
-        } );
+        return $this->elements;
     }
 }

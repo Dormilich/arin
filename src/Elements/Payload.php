@@ -30,7 +30,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
     private $elements = [];
 
     /**
-     * Initialise payload.
+     * Initialise payload. Overwrite this to pass in a setup value.
      * 
      * @return self
      */
@@ -352,7 +352,9 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
 
         foreach ( $ns as $prefix => $namespace ) {
             foreach ( $node->children( $namespace ) as $name => $child ) {
-                $this->fetch( $name )->xmlParse( $child );
+                if ( $attr = $this->fetch( $name ) ) {
+                    $attr->xmlParse( $child );
+                }
             }
         }
     }
@@ -435,7 +437,7 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
      */
     public function jsonSerialize()
     {
-        return $this->children( true );
+        return $this->elements;
     }
 
     /**
