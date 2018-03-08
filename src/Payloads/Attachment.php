@@ -16,8 +16,15 @@ use Dormilich\ARIN\Validators\Base64;
  */
 class Attachment extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'attachment';
 
+    /**
+     * @param string|SplFileInfo $file 
+     * @return self
+     */
     public function __construct( $file = NULL )
     {
         $this->init();
@@ -32,6 +39,9 @@ class Attachment extends Payload
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( NULL, new Element( 'data' ) )
@@ -41,6 +51,13 @@ class Attachment extends Payload
         $this->define( NULL, new Element( 'filename' ) );
     }
 
+    /**
+     * Read file content and convert in to base64.
+     * 
+     * @param SplFileInfo $info 
+     * @return string
+     * @throws ValidationException
+     */
     private function readFile( \SplFileInfo $info )
     {
         try {

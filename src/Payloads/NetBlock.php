@@ -55,8 +55,15 @@ use Dormilich\Http\NetworkInterface;
  */
 class NetBlock extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'netBlock';
 
+    /**
+     * @param NetworkInterface|NULL $net A network object
+     * @return self
+     */
     public function __construct( NetworkInterface $net = NULL )
     {
         $this->init();
@@ -67,6 +74,12 @@ class NetBlock extends Payload
         }
     }
 
+    /**
+     * Return a representation of the addressed space. If a CIDR can't be built, 
+     * display as IP range.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         if ( ! $this->isValid() ) {
@@ -80,6 +93,9 @@ class NetBlock extends Payload
         return $start . ( $length ? '/' . $length : ' - ' . $end );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $ip  = new IpTransformer;
@@ -106,6 +122,9 @@ class NetBlock extends Payload
             ->test( new Range( [ 'min' => 0, 'max' => 128 ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();

@@ -57,21 +57,39 @@ use Dormilich\ARIN\Validators\RegExp;
  */
 class Poc extends Payload implements Primary
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'poc';
 
+    /**
+     * @var boolean The `makeLink` parameter in the API request.
+     */
     private $linked = true;
 
+    /**
+     * @param string|NULL $handle 
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
         $this->set( 'handle', $handle );
     }
 
+    /**
+     * Return the primary key.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->getHandle();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $upper = new CallbackTransformer( 'strtoupper' );
@@ -117,11 +135,17 @@ class Poc extends Payload implements Primary
             ->test( new ClassList( [ 'choices' => Phone::class ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHandle()
     {
         return $this->attr( 'handle' )->jsonSerialize();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();
@@ -131,6 +155,9 @@ class Poc extends Payload implements Primary
         ;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
@@ -143,6 +170,12 @@ class Poc extends Payload implements Primary
         return $this->xmlAppend( $root )->asXML();
     }
 
+    /**
+     * Determine if the object is valid for a create request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     private function validCreate( array $valid )
     {
         $attr = [ 'type', 'country', 'address', 'city', 'email', 'phone', 'lastName' ];
@@ -154,6 +187,12 @@ class Poc extends Payload implements Primary
         return $this->validate( $attr, $valid ) and $this->validType( $valid );
     }
 
+    /**
+     * Determine if the object is valid for an update request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     private function validUpdate( array $valid )
     {
         $attr = [ 'handle', 'created', 'type', 'country', 'address', 'city', 'email', 'phone', 'lastName' ];
@@ -161,6 +200,12 @@ class Poc extends Payload implements Primary
         return $this->validate( $attr, $valid ) and ( $valid[ 'firstName' ] or $valid[ 'company' ] );
     }
 
+    /**
+     * Validate the name fields based on the type field.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     private function validType( array $valid )
     {
         switch ( $this->get( 'type' ) ) {

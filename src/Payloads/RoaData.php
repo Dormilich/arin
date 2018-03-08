@@ -1,5 +1,4 @@
 <?php
-// RoaData
 
 namespace Dormilich\ARIN\Payloads;
 
@@ -20,19 +19,34 @@ use Dormilich\ARIN\Validators\Datetime;
 use Dormilich\ARIN\Validators\RegExp;
 
 /**
- * This is a meta object for use in the Roa payload.
+ * This is a meta object for use in the Roa payload. The XML value is an unwieldy 
+ * string that is hard to compose by hand.
  */
 class RoaData extends Payload implements ElementInterface
 {
+    /**
+     * @inheritDoc
+     */
     protected $xmlns = 'http://www.arin.net/regrws/rpki/v1';
 
+    /**
+     * @inheritDoc
+     */
     protected $name = 'roaData';
 
+    /**
+     * Return the RoaData string.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->getValue();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $asn = $this->asnTransformer();
@@ -66,6 +80,11 @@ class RoaData extends Payload implements ElementInterface
             ->test( new ClassList( [ 'choices' => RoaPrefix::class ] ) );
     }
 
+    /**
+     * Create the data transformer for the ASN part.
+     * 
+     * @return CallbackTransformer
+     */
     private function asnTransformer()
     {
         return new CallbackTransformer( function ( $value ) {

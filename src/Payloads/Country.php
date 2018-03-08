@@ -21,8 +21,15 @@ use Dormilich\ARIN\Validators\RegExp;
  */
 class Country extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'iso3166-1';
 
+    /**
+     * @param string|NULL $handle Alpha2 or Alpha3 country code.
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
@@ -34,11 +41,19 @@ class Country extends Payload
         }
     }
 
+    /**
+     * Returns the country abbreviation.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->get( 'code2' ) ?: $this->get( 'code3' );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $upper = new CallbackTransformer( 'strtoupper' );
@@ -58,6 +73,9 @@ class Country extends Payload
             ->test( new Range( [ 'min' => 1, 'max' => 999 ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();

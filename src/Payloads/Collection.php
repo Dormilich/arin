@@ -13,6 +13,9 @@ use Dormilich\ARIN\Validators\ClassList;
  */
 class Collection extends Group
 {
+    /**
+     * @inheritDoc
+     */
     public function __construct()
     {
         parent::__construct( 'collection', 'http://www.arin.net/regrws/core/v1' );

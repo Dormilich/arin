@@ -34,12 +34,24 @@ use Dormilich\ARIN\Exceptions\ValidationException;
  */
 class Roa extends Payload implements XmlSerializable
 {
+    /**
+     * @inheritDoc
+     */
     protected $xmlns = 'http://www.arin.net/regrws/rpki/v1';
 
+    /**
+     * @inheritDoc
+     */
     protected $name = 'roa';
 
+    /**
+     * @var string The resource class value in the API request.
+     */
     private $resource = 'AR';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( NULL, new Element( 'signature' ) )
@@ -50,6 +62,9 @@ class Roa extends Payload implements XmlSerializable
         $this->define( 'data', new RoaData );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
@@ -62,6 +77,14 @@ class Roa extends Payload implements XmlSerializable
         return $this->xmlAppend( $root )->asXML();
     }
 
+    /**
+     * Get the boolean value for the API request’s resourceClass option. 
+     * If a parameter is passed to the function, this method is used as setter.
+     * 
+     * The default value is "AR" (ARIN region).
+     * 
+     * @return boolean
+     */
     public function resourceClass()
     {
         if ( func_num_args() === 1 ) {
@@ -70,6 +93,12 @@ class Roa extends Payload implements XmlSerializable
         return $this->resource;
     }
 
+    /**
+     * Validate the resourceClass value.
+     * 
+     * @param string $value 
+     * @return string
+     */
     private function getResourceClass( $value )
     {
         $value = strtoupper( $value );

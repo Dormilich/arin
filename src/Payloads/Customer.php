@@ -43,19 +43,34 @@ use Dormilich\ARIN\Validators\RegExp;
  */
 class Customer extends Payload implements Primary
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'customer';
 
+    /**
+     * @param string|NULL $handle 
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
         $this->set( 'handle', $handle );
     }
 
+    /**
+     * Return the primary key.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->getHandle();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $upper = new CallbackTransformer( 'strtoupper' );
@@ -89,11 +104,17 @@ class Customer extends Payload implements Primary
             ->apply( new BooleanTransformer );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHandle()
     {
         return $this->get( 'handle' );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();
@@ -103,6 +124,9 @@ class Customer extends Payload implements Primary
         ;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
@@ -115,6 +139,12 @@ class Customer extends Payload implements Primary
         return $this->xmlAppend( $root )->asXML();
     }
 
+    /**
+     * Determine if the object is valid for a create request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     protected function validCreate( array $valid )
     {
         $attr = [ 'org', 'name', 'address', 'city', 'country' ];
@@ -126,6 +156,12 @@ class Customer extends Payload implements Primary
         return $this->validate( $attr, $valid );
     }
 
+    /**
+     * Determine if the object is valid for an update request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     protected function validUpdate( array $valid )
     {
         $attr = [ 'handle', 'org', 'created', 'name', 'address', 'city', 'country' ];

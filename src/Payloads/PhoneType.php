@@ -15,8 +15,14 @@ use Dormilich\ARIN\Validators\Choice;
  */
 class PhoneType extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'type';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( NULL, new Element( 'description' ) );
@@ -26,6 +32,9 @@ class PhoneType extends Payload
             ->test( new Choice( [ 'choices' => [ 'O', 'F', 'M' ] ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         return $this->attr( 'code' )->isValid();

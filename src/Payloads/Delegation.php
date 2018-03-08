@@ -20,19 +20,34 @@ use Dormilich\ARIN\Validators\NamedElement;
  */
 class Delegation extends Payload implements Primary
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'delegation';
 
+    /**
+     * @param string|NULL $handle 
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
         $this->set( 'name', $handle );
     }
 
+    /**
+     * Return the primary key.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->getHandle();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $nameserver = new Element( 'nameserver' );
@@ -47,16 +62,25 @@ class Delegation extends Payload implements Primary
             ->test( new NamedElement( [ 'name' => 'nameserver' ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHandle()
     {
         return $this->get( 'name' );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         return $this->attr( 'name' )->isValid();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {

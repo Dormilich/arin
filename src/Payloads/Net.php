@@ -73,19 +73,34 @@ use Dormilich\Http\NetworkInterface;
  */
 class Net extends Payload implements Primary
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'net';
 
+    /**
+     * @param string|NULL $handle 
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
         $this->set( 'handle', $handle );
     }
 
+    /**
+     * Return the primary key.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->getHandle();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $htf = new HandleTransformer;
@@ -127,6 +142,11 @@ class Net extends Payload implements Primary
             ->test( new ClassList( [ 'choices' => PocLinkRef::class ] ) );
     }
 
+    /**
+     * Set up the transformer for NetBlocks.
+     * 
+     * @return CallbackTransformer
+     */
     private function netBlockTransformer()
     {
         return new CallbackTransformer( function ( $value ) {
@@ -138,11 +158,17 @@ class Net extends Payload implements Primary
         } );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHandle()
     {
         return $this->get( 'handle' );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();
@@ -152,6 +178,9 @@ class Net extends Payload implements Primary
         ;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
@@ -164,6 +193,12 @@ class Net extends Payload implements Primary
         return $this->xmlAppend( $root )->asXML();
     }
 
+    /**
+     * Determine if the object is valid for a create request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     private function validCreate( array $valid )
     {
         $list[] = ! $valid[ 'handle' ];
@@ -177,6 +212,12 @@ class Net extends Payload implements Primary
         }, $valid[ 'customer' ] xor $valid[ 'org' ] );
     }
 
+    /**
+     * Determine if the object is valid for an update request.
+     * 
+     * @param array $valid Validity matrix.
+     * @return boolean
+     */
     private function validUpdate( array $valid )
     {
         $attr = [ 'version', 'created', 'handle', 'net', 'parentNet', 'name' ];

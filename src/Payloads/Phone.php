@@ -16,19 +16,34 @@ use Dormilich\ARIN\Elements\Payload;
  */
 class Phone extends Payload implements XmlSerializable
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'phone';
 
+    /**
+     * @param string|null $number 
+     * @return self
+     */
     public function __construct( $number = NULL )
     {
         $this->init();
         $this->set( 'number', $number );
     }
 
+    /**
+     * Return the phone number without extension.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->get( 'number' );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( 'type', new PhoneType );
@@ -36,6 +51,9 @@ class Phone extends Payload implements XmlSerializable
         $this->define( NULL, new Element( 'extension' ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();
@@ -43,6 +61,9 @@ class Phone extends Payload implements XmlSerializable
         return $valid[ 'type' ] and $valid[ 'number' ];
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
