@@ -14,11 +14,35 @@ use Dormilich\ARIN\Elements\Payload;
  */
 class AttachmentReference extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'attachmentReference';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( 'filename', new Generated( 'attachmentFilename' ) );
         $this->define( 'id', new Generated( 'attachmentId' ) );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isValid()
+    {
+        return false;
+    }
+
+    /**
+     * Returns the message ID.
+     * 
+     * @return string
+     */
+    public function getHandle()
+    {
+        return $this->get( 'id' );
     }
 }

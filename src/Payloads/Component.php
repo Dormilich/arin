@@ -10,11 +10,25 @@ use Dormilich\ARIN\Elements\Payload;
  */
 class Component extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'component';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( NULL, new Generated( 'name' ) );
         $this->define( NULL, new Generated( 'message' ) );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isValid()
+    {
+        return false;
     }
 }

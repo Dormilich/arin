@@ -20,8 +20,14 @@ use Dormilich\ARIN\Validators\ClassList;
  */
 class TicketedRequest extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'ticketedRequest';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( 'net', new Net );
@@ -83,5 +89,13 @@ class TicketedRequest extends Payload
     {
         $msg = 'The TicketedRequest Payload is read-only.';
         throw new \BadMethodCallException( $msg );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isValid()
+    {
+        return false;
     }
 }

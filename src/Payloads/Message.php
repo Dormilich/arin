@@ -26,24 +26,29 @@ use Dormilich\ARIN\Validators\ClassList;
  */
 class Message extends Payload implements XmlSerializable
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'message';
 
-    public function __construct( $subject = NULL )
-    {
-        $this->init();
-        $this->set( 'subject', $subject );
-    }
-
+    /**
+     * Returns the message text.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return (string) $this->attr( 'text' );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $xmlns = 'http://www.arin.net/regrws/messages/v1';
 
-        $this->define( 'id', new Generated( 'ns2:messageId', $xmlns ) );
+        $this->define( 'id', new Generated( 'ns2:messageId', $xmlns ) ); // integer
 
         $this->define( 'created', new Generated( 'ns2:createdDate', $xmlns ) )
             ->apply( new DatetimeTransformer );
@@ -55,7 +60,7 @@ class Message extends Payload implements XmlSerializable
         $this->define( NULL, new Element( 'category' ) )
             ->test( new Choice( [ 'choices' => [ 'NONE', 'JUSTIFICATION' ] ] ) )
             ->setValue( 'NONE' );
-        // request only
+
         $this->define( NULL, new Group( 'attachments' ) )
             ->apply( new CallbackTransformer( function ( $value ) {
                 return $value instanceof Attachment ? $value : new Attachment( $value );
@@ -66,15 +71,36 @@ class Message extends Payload implements XmlSerializable
             ->test( new ClassList( [ 'choices' => AttachmentReference::class ] ) );
     }
 
+    /**
+     * The ID of the message.
+     * 
+     * @return string|NULL
+     */
+    public function getHandle()
+    {
+        return $this->get( 'id' );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();
-        return $valid[ 'id' ] 
-            ? $this->validUpdate( $valid )
-            : $this->validCreate( $valid )
-        ;
+
+        $list[] = ! $valid[ 'id' ];
+        $list[] = ! $valid[ 'created' ];
+        $list[] = ! $valid[ 'references' ];
+        $list[] = $valid[ 'category' ];
+
+        return array_reduce( $list, function ( $bool, $test ) {
+            return $bool and $test;
+        }, $valid[ 'text' ] or $valid[ 'attachments' ] );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function xmlSerialize()
     {
         if ( ! $this->isValid() ) {
@@ -85,23 +111,5 @@ class Message extends Payload implements XmlSerializable
 
         $root = $this->xmlCreate( 'UTF-8' );
         return $this->xmlAppend( $root )->asXML();
-    }
-
-    protected function validCreate( array $valid )
-    {
-        $list[] = ! $valid[ 'id' ];
-        $list[] = ! $valid[ 'created' ];
-        $list[] = ! $valid[ 'references' ];
-        $list[] = $valid[ 'category' ];
-        #$list[] = $valid[ 'subject' ];
-
-        return array_reduce( $list, function ( $bool, $test ) {
-            return $bool and $test;
-        }, $valid[ 'text' ] or $valid[ 'attachments' ] );
-    }
-
-    protected function validUpdate( array $valid )
-    {
-        return $this->validate( [ 'id', 'created', 'category' ], $valid );
     }
 }

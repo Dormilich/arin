@@ -36,13 +36,24 @@ class Error extends Payload
     const E_NOT_REMOVEABLE = 409;
     const E_OUTAGE = 503;
 
+    /**
+     * @inheritDoc
+     */
     protected $name = 'error';
 
+    /**
+     * Return the code & message.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         return $this->get( 'code' ) . ': ' . $this->get( 'message' );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $message = new Element( 'message' );
@@ -55,22 +66,18 @@ class Error extends Payload
             ->test( new ClassList( [ 'choices'  => Component::class ] ) );
         // this doesn't seem to be a group, but it's the only way to define the 
         // structure without an explicit payload
-        $this->define( NULL, new Group( 'additionalInfo' ) )
+        $this->define( 'info', new Group( 'additionalInfo' ) )
             ->apply( new ElementTransformer( $message ) )
             // to prevent confusion with the Message payload
             ->test( new ClassList( [ 'choices'  => Element::class ] ) );
     }
 
     /**
-     * An error payload is a response-only object.
-     * 
-     * @return false
+     * @inheritDoc
      */
     public function isValid()
     {
-        $valid = $this->validity();
-
-        return $valid[ 'message' ] and $valid[ 'code' ];
+        return false;
     }
 
     /**
