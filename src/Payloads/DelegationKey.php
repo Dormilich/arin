@@ -4,7 +4,10 @@ namespace Dormilich\ARIN\Payloads;
 
 use Dormilich\ARIN\Elements\Element;
 use Dormilich\ARIN\Elements\Payload;
+use Dormilich\ARIN\Transformers\CallbackTransformer;
 use Dormilich\ARIN\Transformers\IntegerTransformer;
+use Dormilich\ARIN\Transformers\MapTransformer;
+use Dormilich\ARIN\Transformers\StackTransformer;
 use Dormilich\ARIN\Validators\Choice;
 
 /**
@@ -19,28 +22,53 @@ use Dormilich\ARIN\Validators\Choice;
  */
 class DelegationKey extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'delegationKey';
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
-        // 5 => RSA/SHA-1 (RFC 4034)
+        $int = new IntegerTransformer;
+
+        $algo = new StackTransformer;
+        $algo->push( new MapTransformer( [
+            'SHA-1' => 5, 'NSEC3-SHA1' => 7, 'SHA-256' => 8,
+            'RSASHA1' => 5, 'RSASHA1-NSEC3-SHA1' => 7, 'RSASHA256' => 8,
+            'RSA/SHA-1' => 5, 'RSA/SHA-1-NSEC3-SHA1' => 7, 'RSA/SHA-256' => 8,
+        ] ) );
+        $algo->push( $int );
+
+        $type = new StackTransformer;
+        $type->push( new CallbackTransformer( function ( $value ) {
+            return preg_replace( '/^(RSA\/?)?SHA-?([12]).*$/', '$2', $value );
+        } ) );
+        $type->push( $int );
+
+        // 5 => RSASHA1 (RFC 4034)
         // 7 => RSASHA1-NSEC3-SHA1 (RFC 5155), alias for 5
-        // 8 => RSA/SHA-256 (RFC 5702)
+        // 8 => RSASHA256 (RFC 5702)
         $this->define( NULL, new Element( 'algorithm' ) )
+            ->apply( $algo )
             ->test( new Choice( [ 'choices' => [ 5, 7, 8 ] ] ) );
         // a hash value
         $this->define( NULL, new Element( 'digest' ) )
             ->test( 'ctype_xdigit' );
         // validity duration since submission in seconds
         $this->define( NULL, new Element( 'ttl' ) )
-            ->apply( new IntegerTransformer )
+            ->apply( $int )
             ->test( 'ctype_digit' );
         // SHA-1 (RFC 4034) & SHA-256 (?)
         // should be 1 for algo 5/7, 2 for algo 8
         $this->define( 'type', new Element( 'digestType' ) )
+            ->apply( $type )
             ->test( new Choice( [ 'choices' => [ 1, 2 ] ] ) );
-        // unsigned integer (RFC 4034)
+        // unsigned 16bit integer (RFC 4034)
         $this->define( NULL, new Element( 'keyTag' ) )
+            ->apply( $int )
             ->test( 'ctype_digit' );
     }
 }

@@ -22,12 +22,15 @@
     "handle": "ARIN-HOSTMASTER",
     "type": "ROLE",
     "company": "American Registry for Internet Numbers",
+    "firstName": null,
+    "middleName": null,
     "lastName": "Registration Services Department",
     "phone": [{
         "type": {
             "description": "Office",
             "code": "O"
         },
-        "number": "+1-703-227-0660"
+        "number": "+1-703-227-0660",
+        "extension": null
     }]
 }

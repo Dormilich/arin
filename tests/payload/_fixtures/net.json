@@ -14,6 +14,7 @@
         "end": "2001:5FF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF",
         "length": "23"
     }],
+    "customer": null,
     "parentNet": "NET6-2001-0",
     "name": "ARIN-001",
     "asn": [

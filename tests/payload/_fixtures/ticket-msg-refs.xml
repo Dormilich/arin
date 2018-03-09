@@ -1,16 +1,16 @@
 <ticket xmlns="http://www.arin.net/regrws/core/v1" xmlns:ns2="http://www.arin.net/regrws/messages/v1">
     <messageReferences>
         <messageReference>
-            <messageId>MESSAGEID</messageId>
+            <messageId>813084102</messageId>
             <attachmentReferences>
                 <attachmentReference>
                     <attachmentFilename>haiku.txt</attachmentFilename>
-                    <attachmentId>ATTACHMENTID</attachmentId>
+                    <attachmentId>1272103575</attachmentId>
                 </attachmentReference>
             </attachmentReferences>
         </messageReference>
     </messageReferences>
-    <ticketNo>TICKETNO</ticketNo>
+    <ticketNo>20110125-X03878</ticketNo>
     <createdDate>2011-01-25T16:17:18-05:00</createdDate>
     <updatedDate>2012-02-28T17:41:17-05:00</updatedDate>
     <webTicketType>POC_RECOVERY</webTicketType>

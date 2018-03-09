@@ -7,6 +7,7 @@ use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Exceptions\ARINException;
 use Dormilich\ARIN\Exceptions\ParserException;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
+use Dormilich\ARIN\Transformers\HandleTransformer;
 use Dormilich\ARIN\Validators\Choice;
 
 /**
@@ -20,25 +21,39 @@ use Dormilich\ARIN\Validators\Choice;
  */
 class PocLinkRef extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'pocLinkRef';
 
+    /**
+     * @param Poc|string|NULL $handle Poc handle.
+     * @return self
+     */
     public function __construct( $handle = NULL )
     {
         $this->init();
         $this->set( 'handle', $handle );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( NULL, new Element( 'description' ) );
 
-        $this->define( NULL, new Element( 'handle' ) );
+        $this->define( NULL, new Element( 'handle' ) )
+            ->apply( new HandleTransformer );
 
         $this->define( NULL, new Element( 'function' ) )
             ->apply( new CallbackTransformer( 'strtoupper' ) )
             ->test( new Choice( [ 'choices' => [ 'AD', 'AB', 'N', 'T' ] ] ) );
     }
 
+    /**
+     * @inheritDoc
+     */
     public function isValid()
     {
         $valid = $this->validity();

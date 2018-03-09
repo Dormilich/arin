@@ -1,7 +1,7 @@
 <ticket xmlns="http://www.arin.net/regrws/core/v1" xmlns:ns2="http://www.arin.net/regrws/messages/v1" xmlns:ns4="http://www.arin.net/regrws/shared-ticket/v1">
     <messages>
         <message>
-            <ns2:messageId>MESSAGEID</ns2:messageId>
+            <ns2:messageId>813084102</ns2:messageId>
             <ns2:createdDate>2012-02-28T17:41:17-05:00</ns2:createdDate>
             <subject>Haiku</subject>
             <text>
@@ -18,7 +18,7 @@
             </attachments>
         </message>
     </messages>
-    <ticketNo>TICKETNO</ticketNo>
+    <ticketNo>20111107-X03878</ticketNo>
     <ns4:shared>true</ns4:shared>
     <ns4:orgHandle>ARIN</ns4:orgHandle>
     <createdDate>2011-11-07T14:04:29-05:00</createdDate>

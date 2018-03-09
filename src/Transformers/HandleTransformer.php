@@ -22,7 +22,11 @@ class HandleTransformer implements DataTransformerInterface
         if ( $value instanceof Primary ) {
             $value = $value->getHandle();
         }
-        elseif ( is_string( $value ) ) {
+        elseif ( is_object( $value ) and method_exists( $value, '__toString' ) ) {
+            $value = (string) $value;
+        }
+
+        if ( is_string( $value ) ) {
             $value = strtoupper( $value );
         }
 

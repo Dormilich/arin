@@ -252,9 +252,26 @@ class TransformerTest extends TestCase
     {
         $tf = new TF\HandleTransformer;
 
-        $obj = $tf->reverseTransform( 'abc' );
+        $obj = $tf->reverseTransform( 'a-b' );
 
         $this->assertFalse( is_object( $obj ) );
+    }
+
+    public function testMapTransformer()
+    {
+        $tf = new TF\MapTransformer([
+            'a' => 1, 'x' => 1,
+            'b' => 2, 'y' => 2,
+            'c' => 3, 'z' => 3,
+        ]);
+
+        $num = $tf->transform( 'x' );
+        $fail = $tf->transform( 'o' );
+        $key = $tf->reverseTransform( $num );
+
+        $this->assertSame( 1, $num, 'internal' );
+        $this->assertSame( 'o', $fail, 'failure' );
+        $this->assertSame( 'a', $key, 'output' );
     }
 
     // test payloads

@@ -1,9 +1,9 @@
 <ticket xmlns="http://www.arin.net/regrws/core/v1">
-    <ticketNo>TICKETNO</ticketNo>
-    <createdDate>2011-11-07T14:04:29-05:00</createdDate>
-    <resolvedDate>2011-11-07T14:04:29-05:00</resolvedDate>
-    <updatedDate>2011-11-07T14:04:29-05:00</updatedDate>
+    <ticketNo>20110125-X03878</ticketNo>
+    <createdDate>2011-01-25T16:17:18-05:00</createdDate>
+    <resolvedDate>2012-02-28T17:41:17-05:00</resolvedDate>
+    <updatedDate>2012-02-28T17:41:17-05:00</updatedDate>
     <webTicketType>POC_RECOVERY</webTicketType>
     <webTicketStatus>CLOSED</webTicketStatus>
-    <webTicketResolution>ANSWERED</webTicketResolution>
+    <webTicketResolution>ACCEPTED</webTicketResolution>
 </ticket>

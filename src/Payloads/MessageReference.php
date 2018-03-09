@@ -17,18 +17,39 @@ use Dormilich\ARIN\Validators\ClassList;
  */
 class MessageReference extends Payload
 {
+    /**
+     * @inheritDoc
+     */
     protected $name = 'messageReference';
 
+    /**
+     * Returns the message ID.
+     * 
+     * @return string
+     */
     public function __toString()
     {
-        return (string) $this->get( 'id' );
+        return (string) $this->getHandle();
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function init()
     {
         $this->define( 'references', new Group( 'attachmentReferences' ) )
             ->test( new ClassList( [ 'choices' => AttachmentReference::class ] ) );
 
         $this->define( 'id', new Generated( 'messageId' ) );
+    }
+
+    /**
+     * Returns the message ID.
+     * 
+     * @return string
+     */
+    public function getHandle()
+    {
+        return $this->get( 'id' );
     }
 }

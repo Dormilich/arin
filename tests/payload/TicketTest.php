@@ -34,7 +34,7 @@ class TicketTest extends TestCase
         $t = Payload::fromXML( $xml );
 
         $this->assertInstanceOf( Ticket::class, $t );
-        $this->assertSame( 'MESSAGEID', (string) $t[ 'references' ][ 0 ] );
+        $this->assertSame( '813084102', (string) $t[ 'references' ][ 0 ] );
 
         return $t;
     }
@@ -50,12 +50,30 @@ class TicketTest extends TestCase
     }
 
     /**
+     * @depends testRefsTicketJson
+     */
+    public function testCloseTicket( Ticket $t )
+    {
+        // quick fix ticket
+        $t[ 'resolved' ] = '2012-02-28T17:41:17-05:00';
+        # $t[ 'resolution' ] = 'ANSWERED';
+
+        $t->set( 'status', 'CLOSED' );
+
+        // the interesting part here is that messages/references are ignored
+        $this->assertTrue( $t->isValid() );
+        $this->assertXmlStringEqualsXmlFile( $this->file . '.xml', $t->xmlSerialize() );
+
+        return $t;
+    }
+
+    /**
      * @expectedException PHPUnit_Framework_Error_Warning
-     * @expectedExceptionMessage Ticket Payload "TICKETNO" is not valid for submission.
+     * @expectedExceptionMessage Ticket Payload "20111107-X03878" is not valid for submission.
      */
     public function testInvalidTicketEmitsWarningOnXmlSerialise()
     {
-        $t = new Ticket( 'TICKETNO' );
+        $t = new Ticket( '20111107-X03878' );
         // prevent warning-to-exception
         $xml = @$t->xmlSerialize();
 
@@ -67,26 +85,9 @@ class TicketTest extends TestCase
 
     public function testParameterMsgRefs()
     {
-        $t = new Ticket( 'TICKETNO' );
+        $t = new Ticket( '20111107-X03878' );
 
         $this->assertTrue( $t->msgRefs() );
         $this->assertFalse( $t->msgRefs( false ) );
-    }
-
-    public function testCloseTicket()
-    {
-        $t = new Ticket( 'TICKETNO' );
-
-        $t[ 'created' ] = '2011-11-07T14:04:29-05:00';
-        $t[ 'updated' ] = '2011-11-07T14:04:29-05:00';
-        $t[ 'resolved' ] = '2011-11-07T14:04:29-05:00';
-        $t[ 'type' ] = 'POC_RECOVERY';
-        $t[ 'status' ] = 'CLOSED';
-        $t[ 'resolution' ] = 'ANSWERED';
-
-        $xml = $t->xmlSerialize();
-
-        $this->assertTrue( $t->isValid() );
-        $this->assertXmlStringEqualsXmlFile( $this->file . '.xml', $xml );
     }
 }

@@ -1,13 +1,18 @@
 {
+    "messages": [],
     "references": [{
-        "id": "MESSAGEID",
+        "id": "813084102",
         "references": [{
             "filename": "haiku.txt",
-            "id": "ATTACHMENTID"
+            "id": "1272103575"
         }]
     }],
-    "ticketNo": "TICKETNO",
+    "ticketNo": "20110125-X03878",
+    "shared": null,
+    "org": null,
     "created": "2011-01-25T16:17:18-05:00",
+    "resolved": null,
+    "closed": null,
     "updated": "2012-02-28T17:41:17-05:00",
     "type": "POC_RECOVERY",
     "status": "PENDING_CONFIRMATION",

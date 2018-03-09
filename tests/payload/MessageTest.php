@@ -36,7 +36,8 @@ class MessageTest extends TestCase
 
     public function testMessageXml()
     {
-        $m = new Message( 'Haiku' );
+        $m = new Message;
+        $m[ 'subject' ] = 'Haiku';
         $m[ 'text' ] = $this->text;
         $m[ 'attachments' ] = $this->file();
 
@@ -58,7 +59,8 @@ class MessageTest extends TestCase
      */
     public function testInvalidMessageEmitsWarningOnXmlSerialise()
     {
-        $m = new Message( 'Haiku' );
+        $m = new Message;
+        $m[ 'subject' ] = 'Haiku';
         // prevent warning-to-exception
         $xml = @$m->xmlSerialize();
 

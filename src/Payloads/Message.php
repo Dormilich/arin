@@ -52,7 +52,8 @@ class Message extends Payload implements XmlSerializable
 
         $this->define( 'created', new Generated( 'ns2:createdDate', $xmlns ) )
             ->apply( new DatetimeTransformer );
-
+        // while the subject is optional, it makes replies easier to track
+        // when viewing them in the online account
         $this->define( NULL, new Element( 'subject' ) );
 
         $this->define( NULL, new MultiLine( 'text' ) );
@@ -88,14 +89,7 @@ class Message extends Payload implements XmlSerializable
     {
         $valid = $this->validity();
 
-        $list[] = ! $valid[ 'id' ];
-        $list[] = ! $valid[ 'created' ];
-        $list[] = ! $valid[ 'references' ];
-        $list[] = $valid[ 'category' ];
-
-        return array_reduce( $list, function ( $bool, $test ) {
-            return $bool and $test;
-        }, $valid[ 'text' ] or $valid[ 'attachments' ] );
+        return ! $valid[ 'id' ] and ! $valid[ 'references' ] and ( $valid[ 'text' ] or $valid[ 'attachments' ] );
     }
 
     /**

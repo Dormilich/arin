@@ -1,6 +1,6 @@
 {
     "messages": [{
-        "id": "MESSAGEID",
+        "id": "813084102",
         "created": "2012-02-28T17:41:17-05:00",
         "subject": "Haiku",
         "text": [
@@ -12,12 +12,16 @@
         "attachments": [{
             "data": "V2F2ZXMgb2YgZGVzdGlueQpzbyBtYW55IGxpZmVzIGluIG1vdGlvbgpwZWJibGUgaW4gYSBwb25k",
             "filename": "haiku.txt"
-        }]
+        }],
+        "references":[]
     }],
-    "ticketNo": "TICKETNO",
+    "references":[],
+    "ticketNo": "20111107-X03878",
     "shared": "true",
     "org": "ARIN",
     "created": "2011-11-07T14:04:29-05:00",
+    "resolved": null,
+    "closed": null,
     "updated": "2012-02-28T17:41:17-05:00",
     "type": "POC_RECOVERY",
     "status": "PENDING_CONFIRMATION",

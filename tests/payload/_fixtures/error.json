@@ -8,7 +8,7 @@
         "name": "MIME-Type",
         "message": "text/xml is not supported"
     }],
-    "additionalInfo": [
+    "info": [
         "Please read the documentation before trying again"
     ]
 }
