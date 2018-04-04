@@ -34,26 +34,24 @@ class DelegationKey extends Payload
     {
         $int = new IntegerTransformer;
 
-        $algo = new StackTransformer;
-        $algo->push( new MapTransformer( [
-            'SHA-1' => 5, 'NSEC3-SHA1' => 7, 'SHA-256' => 8,
-            'RSASHA1' => 5, 'RSASHA1-NSEC3-SHA1' => 7, 'RSASHA256' => 8,
-            'RSA/SHA-1' => 5, 'RSA/SHA-1-NSEC3-SHA1' => 7, 'RSA/SHA-256' => 8,
-        ] ) );
-        $algo->push( $int );
+        $algo = new MapTransformer( [
+            'RSASHA1' => '5',
+            'RSASHA1-NSEC3-SHA1' => '7',
+            'RSASHA256' => '8',
+            'RSASHA512' => '10',
+            'ECDSAP256SHA256' => '13',
+            'ECDSAP384SHA384' => '14',
+        ] );
 
-        $type = new StackTransformer;
-        $type->push( new CallbackTransformer( function ( $value ) {
-            return preg_replace( '/^(RSA\/?)?SHA-?([12]).*$/', '$2', $value );
-        } ) );
-        $type->push( $int );
-
-        // 5 => RSASHA1 (RFC 4034)
-        // 7 => RSASHA1-NSEC3-SHA1 (RFC 5155), alias for 5
-        // 8 => RSASHA256 (RFC 5702)
+        //  5 => RSASHA1 (RFC 4034)
+        //  7 => RSASHA1-NSEC3-SHA1 (RFC 5155), alias for 5
+        //  8 => RSASHA256 (RFC 5702)
+        // 10 => RSASHA512 (RFC 5702)
+        // 13 => ECDSAP256SHA256 (RFC 6605)
+        // 14 => ECDSAP384SHA384 (RFC 6605)
         $this->define( NULL, new Element( 'algorithm' ) )
             ->apply( $algo )
-            ->test( new Choice( [ 'choices' => [ 5, 7, 8 ] ] ) );
+            ->test( new Choice( [ 'choices' => [ 5, 7, 8, 10, 13, 14 ] ] ) );
         // a hash value
         $this->define( NULL, new Element( 'digest' ) )
             ->test( 'ctype_xdigit' );
@@ -61,11 +59,10 @@ class DelegationKey extends Payload
         $this->define( NULL, new Element( 'ttl' ) )
             ->apply( $int )
             ->test( 'ctype_digit' );
-        // SHA-1 (RFC 4034) & SHA-256 (?)
         // should be 1 for algo 5/7, 2 for algo 8
         $this->define( 'type', new Element( 'digestType' ) )
-            ->apply( $type )
-            ->test( new Choice( [ 'choices' => [ 1, 2 ] ] ) );
+            ->apply( $int )
+            ->test( new Choice( [ 'choices' => [ 1, 2, 3, 4 ] ] ) );
         // unsigned 16bit integer (RFC 4034)
         $this->define( NULL, new Element( 'keyTag' ) )
             ->apply( $int )
