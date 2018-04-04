@@ -222,18 +222,18 @@ class Poc extends Payload implements Primary
     }
 
     /**
-     * Get the boolean value for the API request’s makeLink option. 
+     * Get the value for the API request’s makeLink option. 
      * If a parameter is passed to the function, this method is used as setter.
      * 
      * The default value is TRUE (link Poc to account).
      * 
-     * @return boolean
+     * @return string
      */
     public function makeLink()
     {
         if ( func_num_args() === 1 ) {
             $this->linked = filter_var( func_get_arg( 0 ), FILTER_VALIDATE_BOOLEAN );
         }
-        return $this->linked;
+        return $this->linked ? 'true' : 'false';
     }
 }

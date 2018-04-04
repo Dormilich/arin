@@ -71,8 +71,8 @@ class PocTest extends TestCase
     {
         $p = new Poc( 'ARIN-HOSTMASTER' );
 
-        $this->assertTrue( $p->makeLink() );
-        $this->assertFalse( $p->makeLink( false ) );
+        $this->assertSame( 'true', $p->makeLink() );
+        $this->assertSame( 'false', $p->makeLink( false ) );
     }
 
     public function testPersonTypePocValidity()
