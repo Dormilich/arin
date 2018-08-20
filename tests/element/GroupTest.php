@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\ARIN\XmlHandlerInterface;
 use Dormilich\ARIN\Elements\Element;
 use Dormilich\ARIN\Elements\Generated;
 use Dormilich\ARIN\Elements\Group;
@@ -163,6 +164,32 @@ class GroupTest extends TestCase
         $g[ 1 ] = 'xyz';
 
         $this->assertSame( 'xyz', $g[ 1 ]->getValue(), 'set' );
+    }
+
+    public function testArrayAccessWithHandle()
+    {
+        $a = $this->createHandleMock( 'foo' );
+        $b = $this->createHandleMock( 'bar' );
+
+        $g = new Group( 'test' );
+        $g->addValue( $a );
+        $g->addValue( $b );
+
+        $this->assertTrue( isset( $g[ 'FOO' ] ), 'isset' );
+        $this->assertFalse( isset( $g[ 'foo' ] ), 'not set' );
+        $this->assertSame( 'foo', $g[ 'FOO' ]->getValue(), 'get' );
+    }
+
+    private function createHandleMock( $handle )
+    {
+        $mock = $this->getMockBuilder( XmlHandlerInterface::class )
+            ->setMethods( [ 'getHandle', 'getValue', 'getName', 'isValid', 'xmlAppend', 'xmlParse' ] )
+            ->getMock()
+        ;
+        $mock->method( 'getHandle' )->willReturn( strtoupper( $handle ) );
+        $mock->method( 'getValue' )->willReturn( strtolower( $handle ) );
+
+        return $mock;
     }
 
     public function testAssignIterableObject()

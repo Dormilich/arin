@@ -3,6 +3,7 @@
 
 namespace Dormilich\ARIN\Elements;
 
+use Dormilich\ARIN\Primary;
 use Dormilich\ARIN\XmlHandlerInterface;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Exceptions\ParserException;
@@ -254,6 +255,21 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
+     * Convert non-list indices into list indices. This includes negative offsets 
+     * and handle-to-index mapping.
+     * 
+     * @param integer|string $offset 
+     * @return integer|string
+     */
+    private function convertOffset( $offset )
+    {
+        $offset = $this->fromReverseOffset( $offset );
+        $offset = $this->fromHandle( $offset );
+
+        return $offset;
+    }
+
+    /**
      * Convert negative offsets into positive ones.
      * 
      * @param integer|string $offset 
@@ -269,21 +285,40 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
     }
 
     /**
-     * Number of objects assigned. If you call this method directly, it will 
-     * count the number of valid objects if the argument is truthy.
+     * Convert members' handles into the corresponding offset.
+     * 
+     * @param integer|string $offset 
+     * @return integer|string
+     */
+    private function fromHandle( $offset )
+    {
+        if ( ! is_string( $offset ) ) {
+            return $offset;
+        }
+
+        $primary = array_filter( $this->elements, function ( $element ) {
+            // some objects have handles, but are not primary objects
+            return method_exists( $element, 'getHandle' );
+        } );
+
+        $handles = array_map( function ( $element ) {
+            return $element->getHandle();
+        }, $primary );
+
+        $key = array_search( $offset, $handles, true );
+
+        return $key === false ? $offset : $key;
+    }
+
+    /**
+     * Number of objects assigned.
      *
      * @see http://php.net/Countable
      * @return integer
      */
     public function count()
     {
-        $elements = $this->elements;
-
-        if ( func_num_args() === 1 and func_get_arg( 0 ) ) {
-            $elements = $this->jsonSerialize();
-        }
-
-        return count( $elements );
+        return count( $this->elements );
     }
 
     /**
@@ -340,7 +375,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function offsetExists( $offset )
     {
-        $offset = $this->fromReverseOffset( $offset );
+        $offset = $this->convertOffset( $offset );
 
         return $this->arrayKeyExists( $offset );
     }
@@ -355,7 +390,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function offsetGet( $offset )
     {
-        $offset = $this->fromReverseOffset( $offset );
+        $offset = $this->convertOffset( $offset );
 
         if ( $this->arrayKeyExists( $offset ) ) {
             return $this->elements[ $offset ];
@@ -379,7 +414,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function offsetSet( $offset, $value )
     {
-        $offset = $this->fromReverseOffset( $offset );
+        $offset = $this->convertOffset( $offset );
 
         if ( $this->arrayKeyExists( $offset ) ) {
             array_splice( $this->elements, $offset, 0, [ $this->convert( $value ) ] );
@@ -399,7 +434,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     public function offsetUnset( $offset )
     {
-        $offset = $this->fromReverseOffset( $offset );
+        $offset = $this->convertOffset( $offset );
 
         if ( $this->arrayKeyExists( $offset ) ) {
             array_splice( $this->elements, $offset, 1 );
