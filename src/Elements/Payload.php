@@ -166,19 +166,6 @@ abstract class Payload implements XmlHandlerInterface, \ArrayAccess, \Iterator, 
     }
 
     /**
-     * Get all elements whose tag name matches the given value(s).
-     * 
-     * @param string[] $name Tag names or aliases.
-     * @return XmlHandlerInterface[] List of matching elements.
-     */
-    protected function find( array $names )
-    {
-        return array_filter( $this->elements, function ( XmlHandlerInterface $item, $alias ) use ( $names ) {
-            return in_array( $alias, $names, true ) or in_array( $item->getName(), $names, true );
-        }, ARRAY_FILTER_USE_BOTH );
-    }
-
-    /**
      * Get the first element whose alias or tag name matches the given value 
      * case-insensitively.
      * 
