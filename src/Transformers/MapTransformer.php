@@ -21,7 +21,8 @@ class MapTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transform the data from the input format to the XML-compatible format.
+     * Transform the data from the input format to the XML-compatible format. 
+     * Multiple input values may refer to the same XML value.
      * 
      * @param mixed $value Input data.
      * @return mixed XML data.
@@ -32,13 +33,17 @@ class MapTransformer implements DataTransformerInterface
     }
 
     /**
-     * Transform the XML data into a convenient data format for handling in PHP.
+     * Transform the XML data into a convenient data format for handling in PHP. 
+     * If an XML value maps to multiple PHP values, the first one found in the 
+     * array is used.
      * 
      * @param string|NULL $value XML data.
      * @return mixed Output data.
      */
     public function reverseTransform( $value )
     {
-        return array_search( $value, $this->map, true );
+        $key = array_search( $value, $this->map, true );
+
+        return $key === false ? $value : $key;
     }
 }
