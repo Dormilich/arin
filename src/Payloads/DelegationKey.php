@@ -33,39 +33,89 @@ class DelegationKey extends Payload
     protected function init()
     {
         $int = new IntegerTransformer;
-
-        $algo = new MapTransformer( [
-            'RSASHA1' => '5',
-            'RSASHA1-NSEC3-SHA1' => '7',
-            'RSASHA256' => '8',
-            'RSASHA512' => '10',
-            'ECDSAP256SHA256' => '13',
-            'ECDSAP384SHA384' => '14',
-        ] );
-
-        //  5 => RSASHA1 (RFC 4034)
-        //  7 => RSASHA1-NSEC3-SHA1 (RFC 5155), alias for 5
-        //  8 => RSASHA256 (RFC 5702)
-        // 10 => RSASHA512 (RFC 5702)
-        // 13 => ECDSAP256SHA256 (RFC 6605)
-        // 14 => ECDSAP384SHA384 (RFC 6605)
+        // IANA DNSSEC algorithm number
         $this->define( NULL, new Element( 'algorithm' ) )
-            ->apply( $algo )
+            ->apply( $this->getAlgorithmMap() )
             ->test( new Choice( [ 'choices' => [ 5, 7, 8, 10, 13, 14 ] ] ) );
-        // a hash value
+        // hash value
         $this->define( NULL, new Element( 'digest' ) )
             ->test( 'ctype_xdigit' );
         // validity duration since submission in seconds
         $this->define( NULL, new Element( 'ttl' ) )
             ->apply( $int )
             ->test( 'ctype_digit' );
-        // should be 1 for algo 5/7, 2 for algo 8
+        // IANA DS RR digest type number
         $this->define( 'type', new Element( 'digestType' ) )
-            ->apply( $int )
+            ->apply( $this->getDigestTypeMap() )
             ->test( new Choice( [ 'choices' => [ 1, 2, 3, 4 ] ] ) );
         // unsigned 16bit integer (RFC 4034)
         $this->define( NULL, new Element( 'keyTag' ) )
             ->apply( $int )
             ->test( 'ctype_digit' );
+    }
+
+    /**
+     * Map of DNSSEC algorithm numbers.
+     * 
+     * @see https://www.iana.org/assignments/dns-sec-alg-numbers/dns-sec-alg-numbers.xhtml
+     * @return MapTransformer
+     */
+    private function getAlgorithmMap()
+    {
+        $algo = array(
+            'DELETE',
+            'RSA/MD5',
+            'Diffie-Hellman',
+            'DSA/SHA-1',
+            'reserved',
+            'RSA/SHA-1', // 5
+            'DSA-NSEC3-SHA1',
+            'RSASHA1-NSEC3-SHA1', // 7
+            'RSA/SHA-256', // 8
+            'reserved',
+            'RSA/SHA-512', // 10
+            'reserved',
+            'ECC-GOST',
+            'ECDSA-P256/SHA-256', // 13
+            'ECDSA-P384/SHA-384', // 14
+            'Ed25519',
+            'Ed448',
+        );
+
+        return $this->getMapTransformer($algo);
+    }
+
+    /**
+     * Map of DS RR type digest algorithms.
+     * 
+     * @see https://www.iana.org/assignments/ds-rr-types/ds-rr-types.xhtml
+     * @return MapTransformer
+     */
+    private function getDigestTypeMap()
+    {
+        $type = array(
+            'reserved',
+            'SHA-1',   // => 5, 7
+            'SHA-256', // => 8, 13
+            'GOST R 34.11-94',
+            'SHA-384', // => 14
+        );
+
+        return $this->getMapTransformer($type);
+    }
+
+    /**
+     * Convert the list of names into an appropriate mapper.
+     * 
+     * @param array $data 
+     * @return MapTransformer
+     */
+    private function getMapTransformer(array $data)
+    {
+        $data = array_flip($data);
+        $data = array_map('strval', $data);
+        unset($data['reserved']);
+
+        return new MapTransformer($data);
     }
 }
