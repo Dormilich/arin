@@ -10,6 +10,7 @@ use Dormilich\ARIN\Elements\Group;
 use Dormilich\ARIN\Elements\MultiLine;
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Elements\ReadOnly;
+use Dormilich\ARIN\Payloads\PocLinkRef;
 use Dormilich\ARIN\Transformers\CallbackTransformer;
 use Dormilich\ARIN\Transformers\DatetimeTransformer;
 use Dormilich\ARIN\Validators\ClassList;

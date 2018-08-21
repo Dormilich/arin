@@ -5,6 +5,7 @@ namespace Dormilich\ARIN\Payloads;
 use Dormilich\ARIN\Elements\Element;
 use Dormilich\ARIN\Elements\Group;
 use Dormilich\ARIN\Elements\Payload;
+use Dormilich\ARIN\Payloads\Component;
 use Dormilich\ARIN\Transformers\ElementTransformer;
 use Dormilich\ARIN\Validators\ClassList;
 
@@ -63,13 +64,13 @@ class Error extends Payload
         $this->define( NULL, new Element( 'code' ) );
 
         $this->define( NULL, new Group( 'components' ) )
-            ->test( new ClassList( [ 'choices'  => Component::class ] ) );
+            ->test( new ClassList( [ 'choices' => Component::class ] ) );
         // this doesn't seem to be a group, but it's the only way to define the 
         // structure without an explicit payload
         $this->define( 'info', new Group( 'additionalInfo' ) )
             ->apply( new ElementTransformer( $message ) )
             // to prevent confusion with the Message payload
-            ->test( new ClassList( [ 'choices'  => Element::class ] ) );
+            ->test( new ClassList( [ 'choices' => Element::class ] ) );
     }
 
     /**
