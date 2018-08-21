@@ -292,7 +292,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
      */
     private function fromHandle( $offset )
     {
-        if ( ! is_string( $offset ) ) {
+        if ( is_int( $offset ) and $offset < count( $this->elements ) ) {
             return $offset;
         }
 
@@ -305,7 +305,7 @@ class Group implements GroupInterface, XmlHandlerInterface, Transformable, Valid
             return $element->getHandle();
         }, $primary );
 
-        $key = array_search( $offset, $handles, true );
+        $key = array_search( (string) $offset, $handles, true );
 
         return $key === false ? $offset : $key;
     }
