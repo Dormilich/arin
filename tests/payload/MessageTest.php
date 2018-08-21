@@ -41,8 +41,8 @@ class MessageTest extends TestCase
         $m[ 'text' ] = $this->text;
         $m[ 'attachments' ] = $this->file();
 
-        $this->assertSame( 'haiku.txt', $m[ 'attachments' ][ 0 ][ 'filename' ]->getValue() );
-        $this->assertSame( $this->text, $m[ 'attachments' ][ 0 ][ 'data' ]->getValue() );
+        $this->assertSame( 'haiku.txt', $m[ 'attachments' ][ 0 ]->get( 'filename' ) );
+        $this->assertSame( $this->text, $m[ 'attachments' ][ 0 ]->get( 'data' ) );
         $this->assertSame( $this->text, (string) $m );
 
         $xml = $m->xmlSerialize();

@@ -66,4 +66,26 @@ class CustomerTest extends TestCase
 
         $c->xmlSerialize();
     }
+
+    public function testCreatedCustomerIsValid()
+    {
+        $c = new Customer();
+        $c
+            ->set( 'name', 'American Registry for Internet Numbers' )
+            ->set( 'state', 'VA' )
+            ->set( 'city', 'Chantilly' )
+            ->set( 'address', [ '3635 Concorde Pkwy', 'Ste 200' ] )
+        ;
+        $c[ 'country' ][ 'code3' ] = 'USA';
+
+        $this->assertFalse( $c->isValid(), 'missing org' );
+
+        $c->set( 'org', 'ARIN' );
+
+        $this->assertTrue( $c->isValid(), 'valid create' );
+
+        $c->set( 'created', '2010-04-23T20:22:24-04:00' );
+
+        $this->assertFalse( $c->isValid(), 'invalid create' );
+    }
 }

@@ -15,6 +15,8 @@ class TicketedRequestTest extends TestCase
         $xml = file_get_contents( $this->file . 'net.xml' );
         $tr = Payload::fromXML( $xml );
 
+        $this->assertFalse( $tr->isValid() );
+
         $this->assertInstanceOf( Net::class, $tr[ 'net' ] );
         $this->assertTrue( $tr[ 'net' ]->isValid() );
 
@@ -72,4 +74,6 @@ class TicketedRequestTest extends TestCase
         $tr = new TicketedRequest;
         $tr->add( 'net', new Net );
     }
+
+    // test create fails
 }

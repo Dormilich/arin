@@ -15,6 +15,8 @@ class ErrorTest extends TestCase
 
         $this->assertInstanceOf( Error::class, $e );
 
+        $this->assertFalse( $e->isValid() );
+
         return $e;
     }
 
@@ -47,6 +49,19 @@ class ErrorTest extends TestCase
         $msg = 'The Payload could not be processed';
         $this->assertSame( $msg, $e->getMessage() );
         $this->assertSame( 400, $e->getCode() );
+
+        return $e;
+    }
+
+    /**
+     * @depends testGetExceptionInfo
+     */
+    public function testGetComponentError( Error $e )
+    {
+        $c = $e[ 'components' ][ 0 ];
+        $this->assertSame( 'URL', $c->get( 'name' ) );
+        $this->assertSame( 'did not match', $c->get( 'message' ) );
+        $this->assertFalse( $c->isValid() );
 
         return $e;
     }

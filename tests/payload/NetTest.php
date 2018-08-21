@@ -144,4 +144,30 @@ class NetTest extends TestCase
         $this->assertSame( 'S', $net[ 'net' ][ 0 ]->get( 'type' ) );
         $this->assertSame( 'S', $net[ 'net' ][ 1 ]->get( 'type' ) );
     }
+
+    public function testCreatedNetIsValid()
+    {
+        $b = new NetBlock();
+        $b
+            ->set( 'type', 'S' )
+            ->set( 'start', '2001:400::' )
+            ->set( 'length', '23' )
+        ;
+        $n = new Net();
+        $n
+            ->set( 'name', 'ARIN-001' )
+            ->set( 'parentNet', 'NET6-2001-0' )
+            ->set( 'net', $b )
+        ;
+
+        $this->assertFalse( $n->isValid(), 'missing org' );
+
+        $n->set( 'org', 'ARIN' );
+
+        $this->assertTrue( $n->isValid(), 'valid create' );
+
+        $n->set( 'created', '2010-04-23T20:22:24-04:00' );
+
+        $this->assertFalse( $n->isValid(), 'invalid create' );
+    }
 }

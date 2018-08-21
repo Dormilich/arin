@@ -28,6 +28,18 @@ class TicketTest extends TestCase
         return $t;
     }
 
+    /**
+     * @depends testFullTicketJson
+     */
+    public function testGetMessageById( Ticket $t )
+    {
+        $m = $t[ 'messages' ][ '813084102' ];
+
+        $this->assertSame( 'Haiku', $m->get( 'subject' ) );
+
+        return $t;
+    }
+
     public function testReadRefsTicket()
     {
         $xml = file_get_contents( $this->file . '-msg-refs.xml' );
@@ -63,6 +75,18 @@ class TicketTest extends TestCase
         // the interesting part here is that messages/references are ignored
         $this->assertTrue( $t->isValid() );
         $this->assertXmlStringEqualsXmlFile( $this->file . '.xml', $t->xmlSerialize() );
+
+        return $t;
+    }
+
+    /**
+     * @depends testCloseTicket
+     */
+    public function testGetAttachmentReference( Ticket $t )
+    {
+        $r = $t[ 'references' ][ '813084102' ][ 'references' ][ '1272103575' ];
+
+        $this->assertSame( 'haiku.txt', $r->get( 'filename' ) );
 
         return $t;
     }

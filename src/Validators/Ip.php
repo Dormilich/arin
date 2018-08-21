@@ -24,6 +24,9 @@ class Ip
     const V6_ONLY_PUBLIC = '6_public';
     const ALL_ONLY_PUBLIC = 'all_public';
 
+    /**
+     * @var integer A FILTER_FLAG_* combination
+     */
     private $flags;
 
     /**

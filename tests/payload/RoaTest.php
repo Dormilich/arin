@@ -62,7 +62,7 @@ class RoaTest extends TestCase
         $r[ 'data' ] = $roaData;
 
         $this->assertSame( $roaData, (string) $r[ 'data' ] );
-        $this->assertSame( 'AS4321', $r[ 'data' ][ 'asn' ]->getValue() );
+        $this->assertSame( 'AS4321', $r[ 'data' ]->get( 'asn' ) );
 
         return $r;
     }

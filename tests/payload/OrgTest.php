@@ -3,6 +3,7 @@
 use Dormilich\ARIN\Elements\Payload;
 use Dormilich\ARIN\Payloads\Country;
 use Dormilich\ARIN\Payloads\Org;
+use Dormilich\ARIN\Payloads\PocLinkRef;
 use PHPUnit\Framework\TestCase;
 
 class OrgTest extends TestCase
@@ -85,5 +86,29 @@ class OrgTest extends TestCase
             [ 'US' ],
             [ 'USA' ],
         ];
+    }
+
+    public function testCreatedOrgIsValid()
+    {
+        $o = new Org();
+        $o
+            ->set( 'name', 'American Registry for Internet Numbers' )
+            ->set( 'state', 'VA' )
+            ->set( 'city', 'Centreville' )
+            ->set( 'address', 'PO Box 232290' )
+        ;
+        $o[ 'country' ][ 'code3' ] = 'USA';
+
+        $this->assertFalse( $o->isValid(), 'missing poclink' );
+
+        $ad = new PocLinkRef('ARIN-HOSTMASTER');
+        $ad->set( 'function', 'AD' );
+        $o->set( 'poc', $ad );
+
+        $this->assertTrue( $o->isValid(), 'valid create' );
+
+        $o->set( 'created', '1997-12-22T00:00:00-05:00' );
+
+        $this->assertFalse( $o->isValid(), 'invalid create' );
     }
 }

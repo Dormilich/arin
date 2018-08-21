@@ -1,6 +1,7 @@
 <?php
 
 use Dormilich\ARIN\Elements\Payload;
+use Dormilich\ARIN\Payloads\Phone;
 use Dormilich\ARIN\Payloads\Poc;
 use PHPUnit\Framework\TestCase;
 
@@ -90,7 +91,7 @@ class PocTest extends TestCase
      */
     public function testInvalidTypeFailsValidation( Poc $p )
     {
-        $test = new Poc( $p );
+        $test = new Poc();
 
         $test[ 'address' ] = $p[ 'address' ];
         $test[ 'country' ] = $p[ 'country' ];
@@ -103,9 +104,65 @@ class PocTest extends TestCase
         $test[ 'email' ] = $p[ 'email' ];
         $test[ 'phone' ] = $p[ 'phone' ];
 
-        // this is hacking the validation
+        // hacking type's validation to insert an invalid value
         $test[ 'type' ]->test( 'is_string' )->setValue( 'foo' );
 
         $this->assertFalse( $test->isValid() );
+    }
+
+    public function testCreatedRoleIsValid()
+    {
+        $role = new Poc();
+        $role
+            ->set( 'company', 'American Registry for Internet Numbers' )
+            ->set( 'lastName', 'Registration Services Department' )
+            ->set( 'state', 'VA' )
+            ->set( 'city', 'Chantilly' )
+            ->set( 'address', [ '3635 Concorde Pkwy', 'Ste 200' ] )
+            ->set( 'email', 'hostmaster@arin.net' )
+            ->set( 'type', 'role' )
+        ;
+        $role[ 'country' ][ 'code3' ] = 'USA';
+
+        $this->assertFalse( $role->isValid(), 'missing phone' );
+
+        $phone = new Phone( '+1-703-227-0660' );
+        $phone[ 'type' ][ 'code' ] = 'O';
+        $role->set( 'phone', $phone );
+
+        $this->assertTrue( $role->isValid(), 'valid create' );
+
+        $role->set( 'firstName', 'John' );
+
+        $this->assertFalse( $role->isValid(), 'invalid create' );
+    }
+
+    public function testCreatedPersonIsValid()
+    {
+        $person = new Poc();
+        $person
+            ->set( 'lastName', 'Kosters' )
+            ->set( 'company', 'American Registry for Internet Numbers' )
+            ->set( 'state', 'VA' )
+            ->set( 'city', 'Chantilly' )
+            ->set( 'address', [ '3635 Concorde Pkwy', 'Ste 200' ] )
+            ->set( 'email', 'hostmaster@arin.net' )
+            ->set( 'type', 'person' )
+        ;
+        $person[ 'country' ][ 'code3' ] = 'USA';
+
+        $phone = new Phone( '+1-703-227-0660' );
+        $phone[ 'type' ][ 'code' ] = 'O';
+        $person->set( 'phone', $phone );
+
+        $this->assertFalse( $person->isValid(), 'missing name' );
+
+        $person->set( 'firstName', 'Mark' );
+
+        $this->assertTrue( $person->isValid(), 'valid create' );
+
+        $person->set( 'created', '2009-10-02T10:54:45-04:00' );
+
+        $this->assertFalse( $person->isValid(), 'invalid create' );
     }
 }
